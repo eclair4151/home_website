@@ -27,7 +27,7 @@
 					width: 240,
 					height: '100%',
 					clickToHide: true,
-					html: '<div data-action="moveElement" data-args="header"></div>',
+					html: '<div style="height: 95%;" data-action="moveElement" data-args="header"></div>',
 					orientation: 'vertical'
 				},
 				sidePanelToggle: {
