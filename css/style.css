@@ -538,7 +538,7 @@
 		position: fixed;
 		top: 0;
 		left: 0;
-		width: 375px;
+		width: 300px;
 		height: 100%;
 		color: #fff;
 		background: #222629 url('images/overlay.png');
@@ -587,7 +587,7 @@
 	#logo
 	{
 		position: relative;
-		margin: 1.75em 1.5em 1.5em 1.5em;
+		margin: 1.75em 1.5em 2.5em 1.5em;
 		min-height: 48px;
 		cursor: default;
 	}
@@ -611,12 +611,7 @@
 			margin: 0.5em 0 0 0;
 		}
 		
-		#logo .image
-		{
-			position: absolute;
-			left: 0;
-			top: 0;
-		}
+
 	
 	#nav
 	{
@@ -684,7 +679,7 @@
 	
 	#footer
 	{
-		margin-left: 375px;
+		margin-left: 300px;
 		text-align: center;
 		background-color: #dce3e2;
 		padding: 3em 0 4em 0;
@@ -720,7 +715,7 @@
 
 	#main
 	{
-		margin-left: 375px;
+		margin-left: 300px;
 	}
 	
 		#main > section

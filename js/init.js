@@ -123,3 +123,13 @@
 	});
 
 })(jQuery);
+
+
+window.onload = function() {
+  var elevator = new Elevator({
+  	element: document.querySelector('.elevator-button'),
+  	duration: 8000,
+    mainAudio: 'music/elevator.mp3',
+    endAudio: 'music/ding.mp3'
+  });
+};
