@@ -1,0 +1,31 @@
+<html>
+  <head>
+    <script src="https://code.jquery.com/jquery-2.1.4.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.4.3/angular.min.js"></script>
+    <script src="js/facebook.js"></script>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
+    <link rel="stylesheet" href="css/styles.css">
+    <title>Facebook Spammer 5000</title>
+  </head>
+  <body>
+	<div id="fb-root"></div>
+      <div ng-app="facebookApp" ng-controller="myCtrl" id="rootController">
+
+
+
+        <div  style="padding: 20px">
+          <span>Please log in as the weekend warrior facebook account not your own! Logout and back in if needed.<br>This will post to Drexel outdoors group, the 4 Drexel class of 20xx/20xx groups, the Drexel outdoors account as a status and to the weekend warrior facebook page.<br>Use with caution. Also pictures are optional. </span><br>
+          <div class="fb-login-button" onlogin="facebookLogin()" data-auto-logout-link="true" data-max-rows="1" data-size="medium" data-scope="publish_actions,user_managed_groups,publish_pages,manage_pages" data-show-faces="false" data-auto-logout-link="false"></div><br>
+          <span>{{errorMessage}}</span>
+          <br>
+          <textarea ng-disabled="isUserLoggedOut()"  ng-model="facebookMessage" cols="45" rows="15" ></textarea>
+          <input accept="image/jpeg, image/png" ng-disabled="isUserLoggedOut()" type='file' fileread="base64image" style="margin-top:10px" />
+
+          <button ng-disabled="isUserLoggedOut()" style="margin-top:10px" ng-click="uploadToAllGroups()" class="btn">Upload<span ng-show="facebookPosting" style="margin-left: 6px" class="glyphicon glyphicon-refresh glyphicon-refresh-animate"></span></button>
+          <br><span>{{message}}</span>
+        </div>
+
+
+    </div>
+  </body>
+</html>
