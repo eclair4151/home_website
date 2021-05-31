@@ -32,11 +32,9 @@
     vertical-align: middle;
     position: relative;
     z-index: 2;
-    max-width: 500px;
-    box-sizing: border-box;
     width: 90%;
+    box-sizing: border-box;
     background: #fff;
-    padding: 15px 30px;
     -webkit-border-radius: 8px;
     -moz-border-radius: 8px;
     -o-border-radius: 8px;
