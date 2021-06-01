@@ -17,7 +17,7 @@
 
 .blocker:before {
     content: "";
-    display: inline-block;
+    display: inline-flex;
     height: 100%;
     vertical-align: middle;
     margin-right: -0.05em
@@ -80,7 +80,7 @@
     height: 20px;
     width: 2px;
     margin: 0 1px;
-    display: inline-block;
+    display: inline-flex;
     -webkit-animation: sk-stretchdelay 1.2s infinite ease-in-out;
     animation: sk-stretchdelay 1.2s infinite ease-in-out
 }
