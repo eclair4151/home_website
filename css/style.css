@@ -8,15 +8,6 @@
 	Free for personal and commercial use under the CCA 3.0 license (html5up.net/license)
 */
 
-
-/*********************************************************************************/
-
-
-/* Basic                                                                         */
-
-
-/*********************************************************************************/
-
 html {
     overflow-y: scroll;
 }
@@ -61,7 +52,7 @@ body {
     }
     .modal {
         max-width: 80%;
-        max-height: 90%;
+        max-height: 95%;
     }
 }
 
@@ -545,7 +536,7 @@ input[type="reset"]:active,
 /* Item */
 
 .item {
-    box-shadow: 0 0 11px rgba(0, 0, 0, 0.6);
+    box-shadow: 1px 1px 10px 2px rgb(0 0 0 / 30%);
     border-radius: 1px;
     margin-bottom: 40px;
 }

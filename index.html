@@ -13,7 +13,6 @@
     <meta name="keywords" content="Tomer Shemesh Lutron Drexel ShemeshApps eclair4151 SkySim Instruments" />
     <meta name="thumbnail" content="https://tomershemesh.me/images/avatar.jpg" />
 
-    <!--[if lte IE 8]><script src="css/ie/html5shiv.js"></script><![endif]-->
     <link rel="icon" type="image/png" href="favicon/favicon-32x32.png" sizes="32x32">
     <link rel="icon" type="image/png" href="favicon/favicon-96x96.png" sizes="96x96">
     <link rel="icon" type="image/png" href="favicon/favicon-16x16.png" sizes="16x16">
@@ -23,8 +22,19 @@
     <link rel="stylesheet" href="css/style.css" />
     <link rel="stylesheet" href="css/style-wide.css" />
     <link rel="stylesheet" href="css/jquery.modal.min.css" />
-    <!--[if lte IE 9]><link rel="stylesheet" href="css/ie/v9.css" /><![endif]-->
-    <!--[if lte IE 8]><link rel="stylesheet" href="css/ie/v8.css" /><![endif]-->
+
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-03LNZG022Z"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+
+        function gtag() {
+            dataLayer.push(arguments);
+        }
+        gtag('js', new Date());
+
+        gtag('config', 'G-03LNZG022Z');
+    </script>
 </head>
 
 <body>
@@ -65,14 +75,10 @@
 
             <!-- Social Icons -->
             <ul class="icons">
-                <li><a href="https://www.linkedin.com/in/tomerjshemesh" target="_blank" class="icon fa-linkedin-square"><span class="label">Linkedin</span></a></li>
-                <li><a href="https://github.com/eclair4151" target="_blank" class="icon fa-github"><span
-							class="label">GitHub</span></a></li>
-                <li><a href="https://stackoverflow.com/users/4111447/tomer-shemesh" target="_blank" class="icon fa-stack-overflow"><span class="label">Stack</span></a></li>
-                <!-- 				<li style="padding-left: 2px"><a href="https://www.reddit.com/user/eclair4151/submitted/"
-						target="_blank" class="icon fa-reddit"><span class="label">Reddit</span></a></li> -->
-                <li style="padding-left: 2px"><a href="mailto:tomerjshemesh@gmail.com" target="_top" class="icon fa-envelope"><span class="label">Email</span></a></li>
-                <!-- <li><a href="https://www.facebook.com/tomerjshemesh" target="_blank" class="icon fa-reddit"><span class="label">Facebook</span></a></li> -->
+                <li><a href="https://www.linkedin.com/in/tomerjshemesh" class="icon fa-linkedin-square"><span class="label">Linkedin</span></a></li>
+                <li><a href="https://github.com/eclair4151" class="icon fa-github"><span class="label">GitHub</span></a></li>
+                <li><a href="https://stackoverflow.com/users/4111447/tomer-shemesh" class="icon fa-stack-overflow"><span class="label">Stack</span></a></li>
+                <li style="padding-left: 2px"><a href="mailto:tomerjshemesh@gmail.com" target="_blank" class="icon fa-envelope"><span class="label">Email</span></a></li>
             </ul>
         </div>
     </div>
@@ -104,67 +110,61 @@
 
                 <div class="row">
                     <div class="4u">
-                        <article class="item">
-                            <!-- <a href="#ex1" rel="modal:open"> -->
 
-                            <!-- https://itunes.apple.com/us/app/outdoor-nation/id1118007160?ls=1&mt=8 -->
-                            <a href="#slide1" rel="modal:open">
-                                <img src="images/campuschallenge.png" class="image fit" />
+
+                        <article class="item">
+                            <a href="#slide2" rel="modal:open">
+                                <img src="images/parkpassport.png" class="image fit" />
                                 <header>
-                                    <h3><b style="font-weight : 800">ON/AORE Campus Challenge app</b></h3>
-                                    <h3>After seeing my Philly Activity Poster I was hired to make the official ON/AORE app & backend to allow students to register and post in the sdfsdfsdfsdf.</h3>
+                                    <h3><b style="font-weight : 800">ParkPassport</b></h3>
+                                    <h3>A mobile app & backend made for The National Park Service. This service is an easy way to find parks near you, track your activity, and share with friends.
+                                    </h3>
                                 </header>
                             </a>
 
                         </article>
 
                         <article class="item">
-                            <a href="https://flightsim.to/file/572/kdyl-doylestown-airport" target="_blank" class="image fit"><img src="images/airport.png" alt="hackathon" /></a>
+                            <!-- https://www.youtube.com/watch?v=YBPnrcfEAiE -->
+                            <img src="images/airport.png" alt="hackathon" class="image fit" />
                             <header>
                                 <h3><b style="font-weight : 800">KDYL Airport model for MSFS</b></h3>
-                                <h3>A completely hand crafted rendition of the KDYL Doylestown airport based off personal experience and satellite imagery. Importable into the new Microsoft Flight Simulator with all the correct runways, taxiways, and buildings/hangars.
-                                    Open source on <a href="https://github.com/eclair4151/kdyl-microsoft-flight-simulator-scenery" target="_blank">GitHub</a> and available for download on <a href="https://flightsim.to/file/572/kdyl-doylestown-airport"
-                                        target="_blank">Flightsim.to</a>.</h3>
+                                <h3>A hand crafted model of Doylestown airport (KDYL) for Microsoft Flight Simulator. Based off satellite imagery and personal experince, this model has all the correct runways, taxiways, hangars, buildings, etc.</h3>
                             </header>
                         </article>
 
                         <article class="item">
-                            <!-- https://play.google.com/store/apps/details?id=com.shemeshapps.phillyactivityposter&hl=en -->
-                            <a href="images/pap_ios.png" target="_blank" class="image fit">
-                                <img src="images/philly_poster.png" alt="" />
-                            </a>
+                            <img src="images/philly_poster.png" alt="" class="image fit" />
                             <header>
                                 <h3><b style="font-weight : 800">Philly Activity Poster</b></h3>
-                                <h3>The original app for Drexel students to participate in the <a href="http://www.oncampuschallenge.org/" target="_blank">ON Campus
-										Challenge</a>. Upload photos from the users phone, as well as see the leaderboards of the competition. Available on <a target="_blank" href="images/pap_ios.png">iOS</a> and <a target="_blank" href="images/pap_android.png">Android</a>.</h3>
+                                <h3>This app was a tool for Drexel students to participate in the Campus Challenge years before the official app was available. It let users upload photos from thier phone, as well as see the leaderboards of the competition.
+                                </h3>
                             </header>
                         </article>
 
                         <article class="item">
-                            <a href="https://www.youtube.com/watch?v=wwPOBwX9sCM" target="_blank" class="image fit"><img src="images/security.png" alt="security" /></a>
+                            <img src="images/security.png" alt="security" class="image fit" />
                             <header>
                                 <h3><b style="font-weight : 800">Drexel Mobile App Security Talk</b></h3>
-                                <h3>For one of the events at Drexel University I was invited to give a presentation about mobile app security. This talk also became a certified security training at Lutron and is now shown to all new app developers. Watch
-                                    on <a href="https://www.youtube.com/watch?v=wwPOBwX9sCM" target="_blank">YouTube</a>.
+                                <h3>At Drexel University I was invited to give a presentation about mobile app security. This talk also became a certified security training at Lutron and is now shown to all new app developers.
                                 </h3>
                             </header>
                         </article>
 
 
                         <article class="item">
-                            <a href="https://devpost.com/software/multi-sensored-quadfusion-m-s-q" target="_blank" class="image fit"><img src="images/quad_sensor_fustion.jpg" alt="hackathon" /></a>
+                            <img src="images/quad_sensor_fustion.jpg" alt="hackathon" class="image fit" />
                             <header>
                                 <h3><b style="font-weight : 800">Multi-Sensored QuadFusion</b></h3>
-                                <h3>1st place Dragon Hacks 2015 project that lets you control a drone using your field of view and arm movements using Google glass and a MYO armband. See more on <a href="https://devpost.com/software/multi-sensored-quadfusion-m-s-q"
-                                        target="_blank">Devpost</a>.</h3>
+                                <h3>Dragon Hacks Drexel Hackathon 2015. 1st place project that lets you control a drone using your field of view and arm movements using Google glass and a MYO armband.</h3>
                             </header>
                         </article>
 
                         <article class="item">
-                            <a href="https://devpost.com/software/wimap" target="_blank" class="image fit"><img src="images/wimap.png" alt="" /></a>
+                            <img src="images/wimap.png" alt="" class="image fit" />
                             <header>
                                 <h3><b style="font-weight : 800">WiMap</b></h3>
-                                <h3>1st place Dragon Hacks 2017 project that lets you create a heat map of the wifi in your house and suggests an optimal router placement. See more on <a href="https://devpost.com/software/wimap" target="_blank">Devpost</a>.</h3>
+                                <h3>Dragon Hacks Drexel Hackathon 2017. 1st place project that lets you monitor the wifi in your house and create a heat map of the wifi strength for optimal router placement.</h3>
                             </header>
                         </article>
                     </div>
@@ -176,13 +176,13 @@
                     <div class="4u">
 
                         <article class="item">
-                            <a href="https://apps.apple.com/us/app/parkpassport/id1460477186" target="_blank" class="image fit"><img src="images/parkpassport.png" /></a>
-                            <header>
-                                <h3><b style="font-weight : 800">ParkPassport</b></h3>
-                                <h3>One of my contracting jobs included working for the National Park Service to make The ParkPassport mobile app & backend. An easy way to find parks near you, track your activity, and share with friends. Available on <a target="_blank"
-                                        href="https://apps.apple.com/us/app/parkpassport/id1460477186">iOS</a> and <a target="_blank" href="https://play.google.com/store/apps/details?id=org.parktrustpassport.parkpassport_android">Android</a>.
-                                </h3>
-                            </header>
+                            <a href="#slide1" rel="modal:open">
+                                <img src="images/campuschallenge.png" class="image fit" />
+                                <header>
+                                    <h3><b style="font-weight : 800">ON/AORE Campus Challenge app</b></h3>
+                                    <h3>After seeing my Philly Activity Poster I was hired to make the official ON/AORE app & backend to allow students to register and post in the sdfsdfsdfsdf.</h3>
+                                </header>
+                            </a>
 
                         </article>
 
@@ -315,7 +315,7 @@
                 </header>
 
                 <!-- <img class="image featured" src="images/collage.png" alt="" /> -->
-                <p>I'm not currently looking for other job opportunities, but if you are interested you can find my <a href="https://drive.google.com/file/d/0B4kg_oK02hFPMzY0TUhDQnQ5V2c/view?usp=sharing" target="_blank">Résumé here</a>.</p>
+                <p>I'm not currently looking for other job opportunities, but if you are interested you can find my <a href="https://drive.google.com/file/d/0B4kg_oK02hFPMzY0TUhDQnQ5V2c/view?usp=sharing">Résumé here</a>.</p>
 
             </div>
         </section>
@@ -327,7 +327,7 @@
                     <h2>Contact</h2>
                 </header>
                 <p>If you are looking to request a feature or report a bug for one of my projects, please post in the GitHub issues page of the project directly. If you are a recruiter etc, please do not contact me, I am not currently interested. Otherwise,
-                    the best way to contact me is through email at <a href="mailto:tomerjshemesh@gmail.com" target="_top">tomerjshemesh@gmail.com</a>.</p>
+                    the best way to contact me is through email at <a href="mailto:tomerjshemesh@gmail.com" target="_blank">tomerjshemesh@gmail.com</a>.</p>
             </div>
         </section>
 
@@ -368,8 +368,7 @@
     <div class="desc_panel">
         <p>Popup page side 3Popup page side 2. Popup page side 2. Popup page side 2<br> Popup page side 2Popup page side 2Popup page side 2Popup page side 2Popup page side 2Popup page side 2Popup page side 2Popup page side 2Popup page side 2Popup page side
             2Popup page side 2Popup page side 2Popup page side 2Popup page side 2Popup page side 2Popup page side 2Popup page side 2Popup page side 2Popup page side 2Popup page side 2Popup page side 2Popup page side 2Popup page side 2Popup page side 2Popup
-            page side 2.<br> Popup page side 3Popup page side 2. Popup page side 2. Popup page side 2<br> Popup page side 2Popup page side 2Popup page side 2Popup page side 2Popup page side 2Popup page side 2Popup page side 2Popup page side 2Popup page
-            side 2Popup page side 2Pop</p>
+            page side 2.</p>
 
 
 
@@ -381,7 +380,7 @@
     <a href="#slide2" rel="modal:open" class="vertical-center-right">
         <img src="images/next_arrow.png">
     </a>
-    <a href="#slide11" rel="modal:open" class="vertical-center-left">
+    <a href="#slide17" rel="modal:open" class="vertical-center-left">
         <img src="images/prev_arrow.png">
     </a>
 </div>
@@ -422,11 +421,11 @@
 
     <div class="content_panel">
         <a href="images/mc_phone.png">
-            <img src="images/mc_phone.png" style="max-width: 100%; max-height: 62%;" />
+            <img src="images/mc_phone.png" style="max-width: 100%; max-height: 56%;" />
         </a>
         <br>
         <a href="images/mc_mac.png">
-            <img src="images/mc_mac.png" style="max-width: 100%; max-height: 35%;" />
+            <img src="images/mc_mac.png" style="max-width: 100%; max-height: 43%;" />
         </a>
 
     </div>
@@ -574,11 +573,11 @@
 
     <div class="content_panel">
         <a href="https://photos.app.goo.gl/eyxWjn2szVgNdQov6">
-            <img src="images/sim_pic1.png" style="max-width: 100%; max-height: 50%;" />
+            <img src="images/sim_pic1.png" style="max-width: 100%; max-height: 49%;" />
         </a>
         <br>
         <a href="https://photos.app.goo.gl/3wGX3HJew5REgFdg8">
-            <img src="images/sim_pic2.png" style="max-width: 100%; max-height: 50%;" />
+            <img src="images/sim_pic2.png" style="max-width: 100%; max-height: 49%;" />
         </a>
 
     </div>
@@ -676,7 +675,7 @@
 
     </div>
 
-    <a href="#slide1" rel="modal:open" class="vertical-center-right">
+    <a href="#slide12" rel="modal:open" class="vertical-center-right">
         <img src="images/next_arrow.png">
     </a>
     <a href="#slide10" rel="modal:open" class="vertical-center-left">
@@ -684,5 +683,191 @@
     </a>
 </div>
 
+
+<div id="slide12" class="modal">
+
+
+    <div class="content_panel">
+        <a href="images/hackathon1-1.jpg">
+            <img src="images/hackathon1-1.jpg" style="max-width: 100%; max-height: 32%;" />
+        </a>
+        <br>
+        <a href="images/hackathon1-2.jpg">
+            <img src="images/hackathon1-2.jpg" style="max-width: 100%; max-height: 32%;" />
+        </a><br>
+        <a href="images/hackathon1-3.png">
+            <img src="images/hackathon1-3.png" style="max-width: 100%; max-height: 32%;" />
+        </a>
+    </div>
+    <div class="desc_panel">
+
+        <p>Popup page side 3Popup page side 2. Popup page side 2. Popup page side 2<br> Popup page side 2Popup page side 2Popup page side 2Popup page side 2Popup page side 2Popup page side 2Popup page side 2Popup page side 2Popup page side 2Popup page side
+            2Popup page side 2Popup page side 2Popup page side 2Popup page side 2Popup page side 2Popup page side 2Popup page side 2Popup page side 2Popup page side 2Popup page side 2Popup page side 2Popup page side 2Popup page side 2Popup page side 2Popup
+        </p>
+
+    </div>
+
+    <a href="#slide13" rel="modal:open" class="vertical-center-right">
+        <img src="images/next_arrow.png">
+    </a>
+    <a href="#slide11" rel="modal:open" class="vertical-center-left">
+        <img src="images/prev_arrow.png">
+    </a>
+</div>
+
+<div id="slide13" class="modal">
+
+
+    <div class="content_panel">
+        <a href="images/yaptap_screenshots.png">
+            <img src="images/yaptap_screenshots.png" style="max-width: 100%; max-height: 100%;" />
+        </a>
+    </div>
+    <div class="desc_panel">
+
+        <p>Popup page side 3Popup page side 2. Popup page side 2. Popup page side 2<br> Popup page side 2Popup page side 2Popup page side 2Popup page side 2Popup page side 2Popup page side 2Popup page side 2Popup page side 2Popup page side 2Popup page side
+            2Popup page side 2Popup page side 2Popup page side 2Popup page side 2Popup page side 2Popup page side 2Popup page side 2Popup page side 2Popup page side 2Popup page side 2Popup page side 2Popup page side 2Popup page side 2Popup page side 2Popup
+        </p>
+
+    </div>
+
+    <a href="#slide14" rel="modal:open" class="vertical-center-right">
+        <img src="images/next_arrow.png">
+    </a>
+    <a href="#slide12" rel="modal:open" class="vertical-center-left">
+        <img src="images/prev_arrow.png">
+    </a>
+</div>
+
+
+<div id="slide14" class="modal">
+
+
+    <div class="content_panel">
+        <a href="images/drex_screenshots.png">
+            <img src="images/drex_screenshots.png" style="max-width: 100%; max-height: 100%;" />
+        </a>
+    </div>
+    <div class="desc_panel">
+
+        <p>Popup page side 3Popup page side 2. Popup page side 2. Popup page side 2<br> Popup page side 2Popup page side 2Popup page side 2Popup page side 2Popup page side 2Popup page side 2Popup page side 2Popup page side 2Popup page side 2Popup page side
+            2Popup page side 2Popup page side 2Popup page side 2Popup page side 2Popup page side 2Popup page side 2Popup page side 2Popup page side 2Popup page side 2Popup page side 2Popup page side 2Popup page side 2Popup page side 2Popup page side 2Popup
+        </p>
+
+    </div>
+
+    <a href="#slide15" rel="modal:open" class="vertical-center-right">
+        <img src="images/next_arrow.png">
+    </a>
+    <a href="#slide13" rel="modal:open" class="vertical-center-left">
+        <img src="images/prev_arrow.png">
+    </a>
+</div>
+
+<div id="slide15" class="modal">
+
+
+    <div class="content_panel">
+        <a href="images/wimap_screenshots.png">
+            <img src="images/wimap_screenshots.png" style="max-width: 100%; max-height: 100%;" />
+        </a>
+    </div>
+    <div class="desc_panel">
+
+        <p>Popup page side 3Popup page side 2. Popup page side 2. Popup page side 2<br> Popup page side 2Popup page side 2Popup page side 2Popup page side 2Popup page side 2Popup page side 2Popup page side 2Popup page side 2Popup page side 2Popup page side
+            2Popup page side 2Popup page side 2Popup page side 2Popup page side 2Popup page side 2Popup page side 2Popup page side 2Popup page side 2Popup page side 2Popup page side 2Popup page side 2Popup page side 2Popup page side 2Popup page side 2Popup
+        </p>
+
+    </div>
+
+    <a href="#slide16" rel="modal:open" class="vertical-center-right">
+        <img src="images/next_arrow.png">
+    </a>
+    <a href="#slide14" rel="modal:open" class="vertical-center-left">
+        <img src="images/prev_arrow.png">
+    </a>
+</div>
+
+<div id="slide16" class="modal">
+
+
+    <div class="content_panel">
+        <a href="images/chunker_screenshots.png">
+            <img src="images/chunker_screenshots.png" style="max-width: 100%; max-height: 49%;" />
+        </a>
+        <br>
+        <a href="images/chunker_image.jpg">
+            <img src="images/chunker_image.jpg" style="max-width: 100%; max-height: 49%;" />
+        </a>
+    </div>
+    <div class="desc_panel">
+
+        <p>Popup page side 3Popup page side 2. Popup page side 2. Popup page side 2<br> Popup page side 2Popup page side 2Popup page side 2Popup page side 2Popup page side 2Popup page side 2Popup page side 2Popup page side 2Popup page side 2Popup page side
+            2Popup page side 2Popup page side 2Popup page side 2Popup page side 2Popup page side 2Popup page side 2Popup page side 2Popup page side 2Popup page side 2Popup page side 2Popup page side 2Popup page side 2Popup page side 2Popup page side 2Popup
+        </p>
+
+    </div>
+
+    <a href="#slide17" rel="modal:open" class="vertical-center-right">
+        <img src="images/next_arrow.png">
+    </a>
+    <a href="#slide15" rel="modal:open" class="vertical-center-left">
+        <img src="images/prev_arrow.png">
+    </a>
+</div>
+
+
+<div id="slide18" class="modal">
+
+
+    <div class="content_panel">
+        <a href="images/github_activity.png">
+            <img src="images/github_activity.png" style="max-width: 100%; max-height: 100%;" />
+        </a>
+    </div>
+    <div class="desc_panel">
+
+        <p>Popup page side 3Popup page side 2. Popup page side 2. Popup page side 2<br> Popup page side 2Popup page side 2Popup page side 2Popup page side 2Popup page side 2Popup page side 2Popup page side 2Popup page side 2Popup page side 2Popup page side
+            2Popup page side 2Popup page side 2Popup page side 2Popup page side 2Popup page side 2Popup page side 2Popup page side 2Popup page side 2Popup page side 2Popup page side 2Popup page side 2Popup page side 2Popup page side 2Popup page side 2Popup
+        </p>
+
+    </div>
+
+    <a href="#slide1" rel="modal:open" class="vertical-center-right">
+        <img src="images/next_arrow.png">
+    </a>
+    <a href="#slide16" rel="modal:open" class="vertical-center-left">
+        <img src="images/prev_arrow.png">
+    </a>
+</div>
+
+<div id="slide17" class="modal">
+
+
+
+    <div class="content_panel">
+        <a href="images/charles.png">
+            <img src="images/charles.png" style="max-width: 100%; max-height: 49%;" />
+        </a>
+        <br>
+        <a href="images/hash.png">
+            <img src="images/hash.png" style="max-width: 100%; max-height: 49%;" />
+        </a>
+    </div>
+    <div class="desc_panel">
+
+        <p>Popup page side 3Popup page side 2. Popup page side 2. Popup page side 2<br> Popup page side 2Popup page side 2Popup page side 2Popup page side 2Popup page side 2Popup page side 2Popup page side 2Popup page side 2Popup page side 2Popup page side
+            2Popup page side 2Popup page side 2Popup page side 2Popup page side 2Popup page side 2Popup page side 2Popup page side 2Popup page side 2Popup page side 2Popup page side 2Popup page side 2Popup page side 2Popup page side 2Popup page side 2Popup
+        </p>
+
+    </div>
+
+    <a href="#slide1" rel="modal:open" class="vertical-center-right">
+        <img src="images/next_arrow.png">
+    </a>
+    <a href="#slide16" rel="modal:open" class="vertical-center-left">
+        <img src="images/prev_arrow.png">
+    </a>
+</div>
 
 </html>
