@@ -25,6 +25,10 @@ body {
     border-radius: 4px;
 }
 
+.bold_title {
+    font-weight: 900;
+}
+
 
 /* only on screens smaller than 700 px */
 
@@ -70,7 +74,7 @@ body {
 
 .desc_panel {
     background-color: rgb(255, 255, 255);
-    padding: 15px;
+    padding: 25px;
     flex: 1;
     overflow-y: auto
 }
