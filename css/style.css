@@ -29,10 +29,14 @@ body {
     font-weight: 900;
 }
 
+.desc_panel>p {
+    margin-bottom: 0;
+}
+
 
 /* only on screens smaller than 700 px */
 
-@media only screen and (max-width: 700px) {
+@media only screen and (max-width: 699px) {
     .vertical-center-right {
         right: -8%;
     }
@@ -69,6 +73,10 @@ body {
 }
 
 .content_panel>a {
+    border-bottom: none;
+}
+
+.no_border {
     border-bottom: none;
 }
 
