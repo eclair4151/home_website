@@ -39,6 +39,7 @@ body {
     flex: 1;
     overflow-y: auto
 }
+
 .content_panel {
     background-color: #EAEAEA;
     padding: 10px;
@@ -47,7 +48,9 @@ body {
     flex: 0.7;
 }
 
+
 /* only on screens smaller than 700 px */
+
 @media only screen and (max-width: 699px) {
     .vertical-center-right {
         right: -8%;
@@ -60,7 +63,9 @@ body {
     }
 }
 
+
 /* only on screens larger than 700 px */
+
 @media only screen and (min-width: 700px) {
     .vertical-center-right {
         right: -5%;
@@ -72,7 +77,6 @@ body {
         max-width: 80%;
         max-height: 95%;
     }
-
     .desc_panel {
         padding-bottom: 40px;
     }
@@ -82,11 +86,11 @@ body {
         position: absolute;
         left: 41.17647059%;
         right: 25px;
-        height: 10%;
+        height: 40px;
         bottom: 0px;
-        background: linear-gradient(180deg, rgba(0,0,0,0) 0%,  rgba(255,255,255,0.68) 50%,  rgba(255,255,255,1) 100%);
+        background: linear-gradient(180deg, rgba(0, 0, 0, 0) 0%, rgba(255, 255, 255, 0.68) 50%, rgba(255, 255, 255, 1) 100%);
         pointer-events: none;
-      }
+    }
 }
 
 .content_panel>a {
@@ -96,8 +100,6 @@ body {
 .no_border {
     border-bottom: none;
 }
-
-
 
 
 /* @media only screen and (min-width: 1200px) {
