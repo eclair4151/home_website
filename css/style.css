@@ -48,6 +48,14 @@ body {
     flex: 0.7;
 }
 
+.sublinks>a {
+    font-size: 18px;
+}
+
+.sublinks>span {
+    font-size: 18px;
+}
+
 
 /* only on screens smaller than 700 px */
 
