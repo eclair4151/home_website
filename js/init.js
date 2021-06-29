@@ -125,7 +125,9 @@ window.onload = function() {
 
     $('.modal').on($.modal.BEFORE_OPEN, function(event, modal) {
         var slideId = modal.elm.selector.replace("#slide", "")
-        gtag('send', 'event', 'CTA click', 'click', 'open_slide', slideId);
+        gtag('event', 'open_slide', {            
+            'eventValue': slideId
+            });
         updateSlideNumUrl(slideId)
     });
 
