@@ -49,11 +49,11 @@ body {
 }
 
 .sublinks>a {
-    font-size: 18px;
+    font-size: smaller;
 }
 
 .sublinks>span {
-    font-size: 18px;
+    font-size: smaller;
 }
 
 .sublinks {
