@@ -116,9 +116,7 @@ window.onload = function() {
         endAudio: 'music/ding.mp3'
     });
 
-    var url_string = window.location.href
-    var url = new URL(url_string);
-    var slideNum = url.searchParams.get("slide");
+    var slideNum = getCurSlide()
     if (slideNum != '') {
         $('#slide' + slideNum).modal();
     }
@@ -134,7 +132,46 @@ window.onload = function() {
     $('.modal').on($.modal.BEFORE_CLOSE, function(event, modal) {
         updateSlideNumUrl('')
     });
+
+
+    window.addEventListener("keydown", function(event) {
+        if (event.code == "ArrowLeft") {
+            prevSlide()
+        } else if (event.code == "ArrowRight") {
+            nextSlide()
+        }
+      }, true);
 };
+ 
+function nextSlide() {
+    var slideNum = getCurSlide()
+    if (slideNum != '') {
+        if (slideNum == 18) {
+            slideNum = 1
+        } else {
+            slideNum = slideNum + 1
+        }
+        $('#slide' + slideNum).modal();
+    }
+}
+
+function prevSlide() {
+    var slideNum = getCurSlide()
+    if (slideNum != '') {
+        if (slideNum == 1) {
+            slideNum = 18
+        } else {
+            slideNum = slideNum - 1
+        }
+        $('#slide' + slideNum).modal();
+    }
+}
+
+function getCurSlide() {
+    var url_string = window.location.href
+    var url = new URL(url_string);
+    return parseInt(url.searchParams.get("slide"));
+}
 
 function updateSlideNumUrl(slideNum) {
     if (history.pushState) {
