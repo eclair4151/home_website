@@ -19,7 +19,7 @@
     <link rel="icon" href="favicon/favicon.ico" type="image/x-icon">
     <link rel="shortcut icon" href="favicon/favicon.ico" type="image/x-icon">
     <link rel="stylesheet" href="css/skel.css">
-    <link rel="stylesheet" href="css/style.css?v=3">
+    <link rel="stylesheet" href="css/style.css?v=4">
     <link rel="stylesheet" href="css/style-wide.css">
     <link rel="stylesheet" href="css/jquery.modal.min.css">
     <link rel="preload" as="image" href="images/banner.jpg">
@@ -45,8 +45,7 @@
     <script src="js/jquery.modal.min.js"></script>
     <script src="js/skel.min.js"></script>
     <script src="js/skel-layers.min.js"></script>
-    <script src="js/elevator.min.js"></script>
-    <script src="js/init.js?v=4"></script>
+    <script src="js/init.js?v=5"></script>
     <!-- Header -->
     <div id="header" class="skel-layers-fixed">
         <div class="top">
@@ -88,9 +87,16 @@
     <div id="main">
 
         <!-- Intro -->
-        <section id="top" class="one dark cover" style="background-image: url('images/banner.jpg');">
-            <div class="container">
+        <section id="top" class="one dark cover" style="position: relative; padding: 0; background-color: transparent;">
 
+            <!-- background image -->
+            <img src="images/banner.jpg" class="image fit" style="position: absolute;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            background-color: #81918E;" />
+
+            <div class="container" style="padding-bottom: 5em; padding-top: 5em;">
                 <header>
                     <h3 class="alt">Hello, I'm Tomer</h3>
                     <p>A programmer & engineer who's super interested in apps, code, IoT/hardware, 3D modeling, and most things tech related. Currently working at <a href="https://www.casetawireless.com/" target="_blank">Lutron Electronics</a> as a senior
@@ -345,7 +351,6 @@
 
         <!-- Copyright -->
         <ul class="copyright">
-            <!-- <button class="elevator-button button">Take me back up!</button> -->
             <li>&copy; ShemeshApps. All rights reserved.</li>
         </ul>
 

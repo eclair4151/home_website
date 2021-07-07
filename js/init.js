@@ -109,13 +109,6 @@
 
 
 window.onload = function() {
-    var elevator = new Elevator({
-        element: document.querySelector('.elevator-button'),
-        duration: 8000,
-        mainAudio: 'music/elevator.mp3',
-        endAudio: 'music/ding.mp3'
-    });
-
     var slideNum = getCurSlide()
     if (slideNum != '') {
         $('#slide' + slideNum).modal();
@@ -123,9 +116,9 @@ window.onload = function() {
 
     $('.modal').on($.modal.BEFORE_OPEN, function(event, modal) {
         var slideId = modal.elm.selector.replace("#slide", "")
-        gtag('event', 'open_slide', {            
+        gtag('event', 'open_slide', {
             'eventValue': slideId
-            });
+        });
         updateSlideNumUrl(slideId)
     });
 
@@ -140,9 +133,9 @@ window.onload = function() {
         } else if (event.code == "ArrowRight") {
             nextSlide()
         }
-      }, true);
+    }, true);
 };
- 
+
 function nextSlide() {
     var slideNum = getCurSlide()
     if (slideNum != '') {
