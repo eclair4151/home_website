@@ -108,7 +108,8 @@
 })(jQuery);
 
 
-window.onload = function() {
+
+$(document).ready(function() {
     var slideNum = getCurSlide()
     if (slideNum != '') {
         $('#slide' + slideNum).modal();
@@ -134,7 +135,9 @@ window.onload = function() {
             nextSlide()
         }
     }, true);
-};
+});
+
+
 
 function nextSlide() {
     var slideNum = getCurSlide()
