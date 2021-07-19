@@ -244,7 +244,7 @@ i {
 a {
     text-decoration: none;
     color: inherit;
-    border-bottom: dotted 1px rgba(128, 128, 128, 0.5);
+    border-bottom: solid 1px rgba(105, 105, 105, 0.5);
     -moz-transition: color 0.35s ease-in-out, border-bottom-color 0.35s ease-in-out;
     -webkit-transition: color 0.35s ease-in-out, border-bottom-color 0.35s ease-in-out;
     -o-transition: color 0.35s ease-in-out, border-bottom-color 0.35s ease-in-out;
@@ -675,7 +675,7 @@ input[type="reset"]:active,
 
 #logo {
     position: relative;
-    margin: 1.75em 1.5em 2.5em 1.5em;
+    margin: 1.5em 1.5em 1.5em 1.5em;
     min-height: 48px;
     cursor: default;
 }
@@ -705,7 +705,7 @@ input[type="reset"]:active,
 
 #nav ul li a {
     display: block;
-    padding: 0.5em 1.5em 0.5em 1.5em;
+    padding: 0.4em 1.5em 0.4em 1.5em;
     color: rgba(255, 255, 255, 0.5);
     text-decoration: none;
     outline: 0;
@@ -846,4 +846,8 @@ input[type="reset"]:active,
 
 #main>section.four {
     background-color: #e8edec;
+}
+
+#main>section.five {
+    background-color: #e2e5e5;
 }
