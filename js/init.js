@@ -142,7 +142,7 @@ $(document).ready(function() {
 function nextSlide() {
     var slideNum = getCurSlide()
     if (slideNum != '') {
-        if (slideNum == 18) {
+        if (slideNum == 19) {
             slideNum = 1
         } else {
             slideNum = slideNum + 1
@@ -155,7 +155,7 @@ function prevSlide() {
     var slideNum = getCurSlide()
     if (slideNum != '') {
         if (slideNum == 1) {
-            slideNum = 18
+            slideNum = 19
         } else {
             slideNum = slideNum - 1
         }

@@ -579,8 +579,9 @@ input[type="reset"]:active,
 
 .item {
     box-shadow: 1px 1px 10px 2px rgb(0 0 0 / 30%);
-    border-radius: 1px;
+    border-radius: 4px;
     margin-bottom: 40px;
+    overflow: hidden;
 }
 
 .item header {
