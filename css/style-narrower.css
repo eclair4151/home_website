@@ -17,25 +17,40 @@
 	{
 	}
 
-		header br
-		{
-			display: none;
-		}
+	#header_description br
+	{
+		display: none;
+	}
+
+	h1.sidebar_title {
+		margin-top: 50px !important;
+	}
 
 	.image.avatar48
-			{
-				width: 150px;
-				height: 150px;
-				background: transparent;
-			}
+	{
+		display: none !important;
+	}
+
+	.image.avatertop {
+		width: 150px;
+		height: 150px;
+		border-radius: 50%;
+		display: block !important;
+		margin-bottom: 24px !important;
+		margin: auto;
+	}
+
+	.image.avatertop img {
+		width: 150px;
+		height: 150px;
+		border-radius: 50%
+	}
 			
-				.image.avatar48 img
-				{
-					width: 150px;
-					height: 150px;
-					border-radius: 50%
-				}
-				
+	div.heading_container {
+		padding-top: 3em !important;
+		padding-bottom: 3em !important;
+	}
+
 	.container
 	{
 		padding: 0 2em 0 2em;
