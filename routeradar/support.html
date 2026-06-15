@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Support — Route Radar</title>
+<meta name="description" content="Get help with Route Radar. Contact support and find answers to common questions." />
+<meta name="theme-color" content="#0a0e1a" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet" />
+<style>
+  :root{
+    --bg:#080b15;--surface:rgba(255,255,255,.04);--surface-2:rgba(255,255,255,.06);
+    --border:rgba(255,255,255,.08);--text:#eaf0fb;--muted:#8b95ad;
+    --mfl:#2E90FF;--bsl:#FF9F2E;--m1:#A063E0;--pink:#E94C7A;
+    --accent:var(--mfl);--accent-cyan:#38BDF8;--maxw:760px;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{scroll-behavior:smooth}
+  body{font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--text);line-height:1.65;-webkit-font-smoothing:antialiased;min-height:100vh;display:flex;flex-direction:column}
+  h1,h2,h3,.brand{font-family:'Space Grotesk','Inter',sans-serif;letter-spacing:-.02em;line-height:1.15}
+  a{color:inherit;text-decoration:none}
+  .wrap{max-width:var(--maxw);margin:0 auto;padding:0 24px;width:100%}
+  .accent-text{background:linear-gradient(110deg,#38BDF8,var(--mfl) 34%,var(--m1) 70%,var(--pink));-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent}
+  .bg-fx{position:fixed;inset:0;z-index:-1;background:
+    radial-gradient(900px 600px at 80% -10%,rgba(34,211,238,.12),transparent 60%),
+    radial-gradient(800px 600px at 0% 0%,rgba(59,130,246,.12),transparent 55%),var(--bg)}
+  .grid-lines{position:absolute;inset:0;opacity:.3;
+    background-image:linear-gradient(var(--border) 1px,transparent 1px),linear-gradient(90deg,var(--border) 1px,transparent 1px);
+    background-size:46px 46px;mask-image:radial-gradient(ellipse 80% 50% at 50% 0%,#000 30%,transparent 75%)}
+
+  header{position:sticky;top:0;z-index:50;background:rgba(8,11,21,.7);backdrop-filter:blur(14px);border-bottom:1px solid var(--border)}
+  nav{display:flex;align-items:center;justify-content:space-between;height:70px;max-width:1140px;margin:0 auto;padding:0 24px}
+  .brand{display:flex;align-items:center;gap:11px;font-weight:700;font-size:19px}
+  .logo{width:36px;height:36px;border-radius:11px;flex:0 0 auto;object-fit:cover;display:block;box-shadow:0 6px 22px rgba(46,144,255,.3),0 0 0 1px rgba(255,255,255,.06)}
+  .back{color:var(--muted);font-weight:500;font-size:15px;transition:.2s}
+  .back:hover{color:var(--text)}
+
+  main{flex:1;padding:64px 0 80px}
+  .hero-pill{display:inline-flex;align-items:center;gap:8px;font-size:13px;font-weight:600;color:var(--accent-cyan);background:rgba(34,211,238,.1);border:1px solid rgba(34,211,238,.25);padding:7px 14px;border-radius:100px;margin-bottom:22px}
+  h1{font-size:clamp(34px,6vw,50px);margin-bottom:16px}
+  .sub{color:var(--muted);font-size:18px;margin-bottom:44px;max-width:560px}
+
+  .contact-card{background:linear-gradient(135deg,rgba(34,211,238,.08),rgba(59,130,246,.07));border:1px solid var(--border);border-radius:24px;padding:40px;text-align:center;margin-bottom:48px;position:relative;overflow:hidden}
+  .contact-card::before{content:"";position:absolute;width:360px;height:360px;border-radius:50%;background:radial-gradient(circle,rgba(34,211,238,.16),transparent 65%);top:-180px;left:50%;transform:translateX(-50%)}
+  .contact-card .mailico{width:64px;height:64px;border-radius:18px;display:grid;place-items:center;margin:0 auto 20px;background:linear-gradient(135deg,var(--mfl),var(--bsl));box-shadow:0 12px 30px rgba(255,159,46,.28);position:relative}
+  .contact-card .mailico svg{width:30px;height:30px}
+  .contact-card h2{font-size:24px;margin-bottom:8px;position:relative}
+  .contact-card p{color:var(--muted);margin-bottom:24px;position:relative}
+  .email-btn{display:inline-flex;align-items:center;gap:10px;background:#fff;color:#04121f;font-weight:700;font-size:17px;padding:14px 26px;border-radius:14px;transition:.25s;position:relative;font-family:'Space Grotesk',sans-serif}
+  .email-btn:hover{transform:translateY(-2px);box-shadow:0 14px 34px rgba(255,255,255,.18)}
+  .response-note{margin-top:18px;color:var(--muted);font-size:14px;position:relative}
+
+  .faq h2{font-size:24px;margin-bottom:6px}
+  .faq>p{color:var(--muted);margin-bottom:24px}
+  details{background:var(--surface);border:1px solid var(--border);border-radius:16px;margin-bottom:12px;overflow:hidden;transition:.2s}
+  details[open]{background:var(--surface-2);border-color:rgba(255,255,255,.16)}
+  summary{list-style:none;cursor:pointer;padding:20px 22px;font-weight:600;font-size:16px;display:flex;align-items:center;justify-content:space-between;gap:14px}
+  summary::-webkit-details-marker{display:none}
+  summary .chev{width:20px;height:20px;flex:0 0 auto;transition:.25s;color:var(--muted)}
+  details[open] summary .chev{transform:rotate(180deg)}
+  details .body{padding:0 22px 20px;color:var(--muted);font-size:15px}
+  details .body a{color:var(--accent-cyan);font-weight:600}
+
+  footer{border-top:1px solid var(--border);padding:34px 0;color:var(--muted);font-size:13px}
+  .foot-inner{display:flex;justify-content:space-between;flex-wrap:wrap;gap:14px}
+  .foot-inner a{color:var(--muted);transition:.2s}.foot-inner a:hover{color:var(--text)}
+  .foot-links{display:flex;gap:22px}
+
+  @media(max-width:560px){.contact-card{padding:30px 22px}}
+</style>
+</head>
+<body>
+<div class="bg-fx"><div class="grid-lines"></div></div>
+
+<header>
+  <nav>
+    <a class="brand" href="index.html">
+      <img class="logo" src="assets/app-icon.png" alt="Route Radar app icon" />
+      Route Radar
+    </a>
+    <a class="back" href="index.html">← Back to home</a>
+  </nav>
+</header>
+
+<main>
+  <div class="wrap">
+    <span class="hero-pill">● We're here to help</span>
+    <h1>Support &amp; <span class="accent-text">help</span></h1>
+    <p class="sub">Got a question, found a bug, or have an idea to make Route Radar better? Reach out — every message gets read.</p>
+
+    <div class="contact-card">
+      <div class="mailico">
+        <svg viewBox="0 0 24 24" fill="none"><rect x="3" y="5" width="18" height="14" rx="3" stroke="#04121f" stroke-width="2"/><path d="M4 7l8 6 8-6" stroke="#04121f" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </div>
+      <h2>Email support</h2>
+      <p>The fastest way to get in touch. Include your iPhone model and iOS version for bug reports.</p>
+      <a class="email-btn" href="mailto:tomerjshemesh@gmail.com?subject=Route%20Radar%20Support">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><rect x="3" y="5" width="18" height="14" rx="3" stroke="#04121f" stroke-width="2"/><path d="M4 7l8 6 8-6" stroke="#04121f" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        tomerjshemesh@gmail.com
+      </a>
+      <div class="response-note">We typically reply within a couple of days.</div>
+    </div>
+
+    <section class="faq">
+      <h2>Common questions</h2>
+      <p>A few things that come up often.</p>
+
+      <details>
+        <summary>Where does the transit data come from? <svg class="chev" viewBox="0 0 24 24" fill="none"><path d="M6 9l6 6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></summary>
+        <div class="body">Directly from the public SEPTA and PATCO APIs, plus Indego's bike-share feed. Route Radar displays that data as the agencies publish it, so accuracy depends on their feeds.</div>
+      </details>
+
+      <details>
+        <summary>Why is an arrival or schedule time wrong? <svg class="chev" viewBox="0 0 24 24" fill="none"><path d="M6 9l6 6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></summary>
+        <div class="body">Route Radar shows the times exactly as SEPTA publishes them, blending the official schedule with live vehicle positions. It doesn't invent or adjust times on its own — so when an arrival looks off, it's coming from the agency's data, not the app.</div>
+      </details>
+
+      <details>
+        <summary>Why does a bus look late, early, or out of place? <svg class="chev" viewBox="0 0 24 24" fill="none"><path d="M6 9l6 6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></summary>
+        <div class="body">Lateness and vehicle positions come straight from SEPTA's real-time feed. When a vehicle's GPS drifts or its trip is reported inconsistently, that can show up as a bus that looks late, early, or briefly in the wrong spot — Route Radar is faithfully drawing whatever the feed reports, and it usually corrects on the next update.</div>
+      </details>
+
+      <details>
+        <summary>Why did a vehicle disappear from the map? <svg class="chev" viewBox="0 0 24 24" fill="none"><path d="M6 9l6 6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></summary>
+        <div class="body">A vehicle drops off the map when it stops reporting to SEPTA's feed — end of trip, a GPS gap, or a stale position the app filters out to avoid showing "ghost" buses. If it's still in service, it typically reappears once the agency's data refreshes.</div>
+      </details>
+
+      <details>
+        <summary>Do my pinned stops sync between devices? <svg class="chev" viewBox="0 0 24 24" fill="none"><path d="M6 9l6 6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></summary>
+        <div class="body">Yes — pinned stops and filter preferences sync through your iCloud account using Apple's iCloud key-value storage, so they stay in step across your devices. Make sure iCloud is enabled in iOS Settings.</div>
+      </details>
+
+      <details>
+        <summary>Does Route Radar use my location? <svg class="chev" viewBox="0 0 24 24" fill="none"><path d="M6 9l6 6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></summary>
+        <div class="body">Only with your permission — to center the map on you and find nearby stops. It's not used for advertising and never sold, and you can use the app fully without granting location access. See the <a href="privacy.html">privacy policy</a> for details.</div>
+      </details>
+
+      <details>
+        <summary>How do I report a bug or request a feature? <svg class="chev" viewBox="0 0 24 24" fill="none"><path d="M6 9l6 6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></summary>
+        <div class="body">Just <a href="mailto:tomerjshemesh@gmail.com?subject=Route%20Radar%20Feedback">email us</a>. Bug reports are most helpful with your iPhone model, iOS version, and the route or stop involved. Feature ideas are always welcome.</div>
+      </details>
+    </section>
+  </div>
+</main>
+
+<footer>
+  <div class="wrap foot-inner">
+    <span>© <span id="year"></span> Route Radar. Made in Philadelphia.</span>
+    <span class="foot-links">
+      <a href="index.html">Home</a>
+      <a href="privacy.html">Privacy</a>
+      <a href="mailto:tomerjshemesh@gmail.com">Contact</a>
+    </span>
+  </div>
+</footer>
+
+<script>document.getElementById('year').textContent = new Date().getFullYear();</script>
+</body>
+</html>

@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Privacy Policy — Route Radar</title>
+<meta name="description" content="Route Radar's privacy policy. We keep data collection minimal, don't sell your data, and don't use advertising trackers." />
+<meta name="theme-color" content="#0a0e1a" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet" />
+<style>
+  :root{
+    --bg:#080b15;--surface:rgba(255,255,255,.04);--surface-2:rgba(255,255,255,.06);
+    --border:rgba(255,255,255,.08);--text:#eaf0fb;--muted:#8b95ad;
+    --mfl:#2E90FF;--bsl:#FF9F2E;--m1:#A063E0;--pink:#E94C7A;
+    --accent:var(--mfl);--accent-cyan:#38BDF8;--maxw:780px;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{scroll-behavior:smooth}
+  body{font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--text);line-height:1.7;-webkit-font-smoothing:antialiased;min-height:100vh;display:flex;flex-direction:column}
+  h1,h2,h3,.brand{font-family:'Space Grotesk','Inter',sans-serif;letter-spacing:-.02em;line-height:1.2}
+  a{color:inherit;text-decoration:none}
+  .wrap{max-width:var(--maxw);margin:0 auto;padding:0 24px;width:100%}
+  .accent-text{background:linear-gradient(110deg,#38BDF8,var(--mfl) 34%,var(--m1) 70%,var(--pink));-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent}
+  .bg-fx{position:fixed;inset:0;z-index:-1;background:
+    radial-gradient(900px 600px at 80% -10%,rgba(34,211,238,.1),transparent 60%),
+    radial-gradient(800px 600px at 0% 0%,rgba(59,130,246,.1),transparent 55%),var(--bg)}
+  .grid-lines{position:absolute;inset:0;opacity:.28;
+    background-image:linear-gradient(var(--border) 1px,transparent 1px),linear-gradient(90deg,var(--border) 1px,transparent 1px);
+    background-size:46px 46px;mask-image:radial-gradient(ellipse 80% 50% at 50% 0%,#000 30%,transparent 75%)}
+
+  header{position:sticky;top:0;z-index:50;background:rgba(8,11,21,.7);backdrop-filter:blur(14px);border-bottom:1px solid var(--border)}
+  nav{display:flex;align-items:center;justify-content:space-between;height:70px;max-width:1140px;margin:0 auto;padding:0 24px}
+  .brand{display:flex;align-items:center;gap:11px;font-weight:700;font-size:19px}
+  .logo{width:36px;height:36px;border-radius:11px;flex:0 0 auto;object-fit:cover;display:block;box-shadow:0 6px 22px rgba(46,144,255,.3),0 0 0 1px rgba(255,255,255,.06)}
+  .back{color:var(--muted);font-weight:500;font-size:15px;transition:.2s}.back:hover{color:var(--text)}
+
+  main{flex:1;padding:60px 0 80px}
+  .doc-head{margin-bottom:40px}
+  .hero-pill{display:inline-flex;align-items:center;gap:8px;font-size:13px;font-weight:600;color:var(--accent-cyan);background:rgba(34,211,238,.1);border:1px solid rgba(34,211,238,.25);padding:7px 14px;border-radius:100px;margin-bottom:22px}
+  h1{font-size:clamp(34px,6vw,48px);margin-bottom:14px}
+  .updated{color:var(--muted);font-size:15px}
+
+  /* TL;DR summary box */
+  .tldr{background:linear-gradient(135deg,rgba(34,211,238,.08),rgba(59,130,246,.06));border:1px solid var(--border);border-radius:22px;padding:30px;margin-bottom:48px}
+  .tldr h2{font-size:18px;margin-bottom:18px;display:flex;align-items:center;gap:10px}
+  .tldr h2 svg{width:22px;height:22px;color:var(--accent-cyan)}
+  .tldr ul{list-style:none;display:grid;gap:12px}
+  .tldr li{display:flex;gap:12px;align-items:flex-start;font-size:15px;color:#d6def0}
+  .tldr li .c{width:24px;height:24px;border-radius:7px;flex:0 0 auto;display:grid;place-items:center;background:rgba(34,211,238,.14);color:var(--accent-cyan);margin-top:1px}
+  .tldr li .c svg{width:15px;height:15px}
+
+  .content h2{font-size:23px;margin:42px 0 14px;padding-top:8px}
+  .content h2:first-child{margin-top:0}
+  .content h3{font-size:17px;margin:24px 0 8px;color:#d6def0}
+  .content p{color:var(--muted);margin-bottom:14px}
+  .content ul{color:var(--muted);margin:0 0 16px 0;padding-left:4px;list-style:none}
+  .content ul li{position:relative;padding-left:22px;margin-bottom:9px}
+  .content ul li::before{content:"";position:absolute;left:2px;top:11px;width:6px;height:6px;border-radius:50%;background:var(--accent-cyan)}
+  .content strong{color:var(--text);font-weight:600}
+  .content a{color:var(--accent-cyan);font-weight:600}
+  .content a:hover{text-decoration:underline}
+  hr{border:none;border-top:1px solid var(--border);margin:42px 0}
+
+  .contact-box{background:var(--surface);border:1px solid var(--border);border-radius:18px;padding:26px;margin-top:10px}
+  .contact-box a{font-family:'Space Grotesk',sans-serif;font-size:17px}
+
+  footer{border-top:1px solid var(--border);padding:34px 0;color:var(--muted);font-size:13px}
+  .foot-inner{display:flex;justify-content:space-between;flex-wrap:wrap;gap:14px;max-width:var(--maxw);margin:0 auto;padding:0 24px}
+  .foot-inner a{color:var(--muted);transition:.2s}.foot-inner a:hover{color:var(--text)}
+  .foot-links{display:flex;gap:22px}
+</style>
+</head>
+<body>
+<div class="bg-fx"><div class="grid-lines"></div></div>
+
+<header>
+  <nav>
+    <a class="brand" href="index.html">
+      <img class="logo" src="assets/app-icon.png" alt="Route Radar app icon" />
+      Route Radar
+    </a>
+    <a class="back" href="index.html">← Back to home</a>
+  </nav>
+</header>
+
+<main>
+  <div class="wrap">
+    <div class="doc-head">
+      <span class="hero-pill">🔒 Your privacy</span>
+      <h1>Privacy <span class="accent-text">Policy</span></h1>
+      <p class="updated">Last updated: June 15, 2026</p>
+    </div>
+
+    <!-- TL;DR -->
+    <div class="tldr">
+      <h2><svg viewBox="0 0 24 24" fill="none"><path d="M13 2L3 14h7l-1 8 10-12h-7l1-8z" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg> The short version</h2>
+      <ul>
+        <li><span class="c"><svg viewBox="0 0 24 24" fill="none"><path d="M5 12l5 5L20 6" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg></span><span>We <strong>don't sell</strong> your personal information or use advertising trackers.</span></li>
+        <li><span class="c"><svg viewBox="0 0 24 24" fill="none"><path d="M5 12l5 5L20 6" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg></span><span><strong>No account required</strong> to use Route Radar.</span></li>
+        <li><span class="c"><svg viewBox="0 0 24 24" fill="none"><path d="M5 12l5 5L20 6" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg></span><span>Location is used to <strong>show nearby transit</strong> — not for advertising, and never sold.</span></li>
+        <li><span class="c"><svg viewBox="0 0 24 24" fill="none"><path d="M5 12l5 5L20 6" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg></span><span>The app connects to <strong>public transit data sources</strong> (SEPTA, PATCO, Indego) to show the map.</span></li>
+      </ul>
+    </div>
+
+    <div class="content">
+      <h2>1. Introduction</h2>
+      <p>This Privacy Policy explains how <strong>Route Radar</strong> ("the app", "we", "us") handles information. Route Radar is an independent, free iPhone app that displays live Philadelphia-area public transit. We aim to keep data collection to a minimum and to be straightforward about how the app works. By using Route Radar, you agree to this policy.</p>
+
+      <h2>2. Our approach to your information</h2>
+      <p>Route Radar is built to collect as little as possible. In particular, we do <strong>not</strong>:</p>
+      <ul>
+        <li>Require you to create an account or provide a name, email, or phone number to use the app.</li>
+        <li>Sell or rent your personal information, or share it with data brokers.</li>
+        <li>Use advertising identifiers or third-party advertising or tracking SDKs.</li>
+        <li>Build advertising profiles about you.</li>
+      </ul>
+      <p>Where a feature does need to process information to work, we use only what's necessary for that feature and describe it below.</p>
+
+      <h2>3. Location information</h2>
+      <p>If you grant location permission, Route Radar uses your device's location to:</p>
+      <ul>
+        <li>Center the map on your current position.</li>
+        <li>Help you find nearby stops and vehicles.</li>
+      </ul>
+      <p>Your location is used to provide these features. We don't use it for advertising and we don't sell it. Route Radar does not use background location and does not build a history of your movements. The app is fully usable without granting location access — you can decline the permission and simply pan the map yourself. You can review or revoke this permission at any time in <strong>iOS Settings → Privacy &amp; Security → Location Services</strong>.</p>
+
+      <h2>4. Data stored on your device</h2>
+      <p>Route Radar saves a small amount of information so the app works the way you left it, such as your <strong>pinned stops</strong> and your <strong>filter and display preferences</strong>. This information is stored locally on your device and, if you have iCloud enabled, in <strong>your own private iCloud account</strong> using Apple's iCloud key-value storage so it can sync between your devices.</p>
+      <p>This iCloud data lives inside <strong>your</strong> Apple account and is governed by <a href="https://www.apple.com/legal/privacy/" target="_blank" rel="noopener">Apple's Privacy Policy</a>. It syncs through Apple's iCloud, not through us. You can clear this data by removing your pins in the app or by deleting the app from your devices.</p>
+      <p>If you choose to sign in to <strong>SEPTA Key</strong>, your SEPTA Key credentials are stored securely in your device's Keychain and are used only to sign in to SEPTA's service so the app can show your card balance, passes, and trip history. You can remove them at any time by signing out.</p>
+
+      <h2>5. Third-party transit data</h2>
+      <p>To show live transit, Route Radar connects to public transportation data providers:</p>
+      <ul>
+        <li><strong>SEPTA</strong> — bus, trolley, subway, and regional rail positions, schedules, and alerts.</li>
+        <li><strong>PATCO</strong> — train positions and schedules.</li>
+        <li><strong>Indego</strong> — bike-share station and availability data.</li>
+      </ul>
+      <p>These requests fetch <strong>public transit information</strong> (for example, where vehicles are and when they arrive). As with any internet request, these providers may receive standard technical information such as your device's IP address as a normal part of delivering data, and their own privacy practices apply to their services. Route Radar is not affiliated with or endorsed by SEPTA, PATCO, or Indego.</p>
+
+      <h2>6. Analytics</h2>
+      <p>Route Radar currently includes <strong>no analytics and no usage tracking</strong> whatsoever.</p>
+      <p>In the future, we may add <strong>privacy-respecting, anonymous analytics</strong> to understand which features are used and to improve the app — for example, aggregated, anonymized usage counts that are not tied to your identity and do not track you across apps or websites. If we ever introduce analytics, we will update this policy first, describe exactly what is measured, and keep it privacy-focused. We will never add advertising trackers or sell usage data.</p>
+
+      <h2>7. How information is used</h2>
+      <p>Any information the app handles is used solely to provide app functionality — showing your saved stops, remembering your preferences, finding nearby transit, and drawing the live map. None of it is used for profiling, advertising, or marketing.</p>
+
+      <h2>8. Children's privacy</h2>
+      <p>Route Radar is suitable for general audiences and is not directed to children under 13. We don't knowingly collect personal information from children.</p>
+
+      <h2>9. Data security</h2>
+      <p>We take reasonable measures to protect the information the app handles. Your saved stops and preferences stay on your device and, optionally, within your iCloud account, which is secured by Apple. Network requests are made over secure (HTTPS) connections.</p>
+
+      <h2>10. Your rights &amp; choices</h2>
+      <ul>
+        <li><strong>Location:</strong> grant, deny, or revoke at any time in iOS Settings.</li>
+        <li><strong>iCloud sync:</strong> control via your device's iCloud settings.</li>
+        <li><strong>Your saved data:</strong> remove pinned stops in the app, or delete the app to remove all locally stored data.</li>
+      </ul>
+      <p>If you have a question or request about your information, contact us using the details below and we'll help.</p>
+
+      <h2>11. Changes to this policy</h2>
+      <p>We may update this Privacy Policy as the app evolves. New features — such as notifications, Live Activities, or community-sourced transit information — may involve processing additional data in order to work; if and when we add anything like that, we'll update this policy first to explain what's involved and keep our minimal, privacy-minded approach. When we make changes, we'll revise the "Last updated" date at the top of this page. Continued use of the app after an update means you accept the revised policy.</p>
+
+      <h2>12. Contact</h2>
+      <p>Questions about this policy or your privacy? Get in touch — we're happy to help.</p>
+      <div class="contact-box">
+        <a href="mailto:tomerjshemesh@gmail.com?subject=Route%20Radar%20Privacy" style="color:var(--accent-cyan)">tomerjshemesh@gmail.com</a>
+      </div>
+    </div>
+  </div>
+</main>
+
+<footer>
+  <div class="foot-inner">
+    <span>© <span id="year"></span> Route Radar. Made in Philadelphia.</span>
+    <span class="foot-links">
+      <a href="index.html">Home</a>
+      <a href="support.html">Support</a>
+      <a href="mailto:tomerjshemesh@gmail.com">Contact</a>
+    </span>
+  </div>
+</footer>
+
+<script>document.getElementById('year').textContent = new Date().getFullYear();</script>
+</body>
+</html>
