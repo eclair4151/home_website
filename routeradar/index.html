@@ -116,9 +116,16 @@
   .appstore svg{width:26px;height:26px}
   .appstore small{display:block;font-size:11px;font-weight:500;opacity:.7;line-height:1}
   .appstore b{font-size:18px;font-family:'Space Grotesk',sans-serif}
-  .hero-stats{display:flex;gap:30px;margin-top:40px}
-  .hero-stats .s b{font-family:'Space Grotesk',sans-serif;font-size:26px;display:block}
+  .hero-stats{display:flex;flex-wrap:wrap;align-items:center;gap:14px 22px;margin-top:40px}
+  .hero-stats .s{text-align:center}
+  .hero-stats .s b{font-family:'Space Grotesk',sans-serif;font-size:26px;display:block;line-height:1.15;white-space:nowrap;margin-bottom:2px}
   .hero-stats .s span{color:var(--muted);font-size:13px}
+  .stat-sep{width:5px;height:5px;border-radius:50%;background:rgba(255,255,255,.22);flex:0 0 auto}
+  /* Pre-launch beta note */
+  .beta{margin-top:16px;font-size:14px;color:var(--muted);line-height:1.6}
+  .beta a{color:var(--accent-cyan);font-weight:600;white-space:nowrap}
+  .beta a:hover{text-decoration:underline}
+  .beta-dot{display:inline-block;width:7px;height:7px;border-radius:50%;background:var(--bsl);vertical-align:middle;margin-right:8px;box-shadow:0 0 0 3px rgba(255,159,46,.2)}
 
   /* Phone mockup */
   .phone{position:relative;width:300px;aspect-ratio:300/620;margin:0 auto;border-radius:44px;padding:13px;
@@ -126,7 +133,7 @@
     box-shadow:0 40px 90px rgba(0,0,0,.6),inset 0 1px 0 rgba(255,255,255,.08);}
   .phone .notch{position:absolute;top:24px;left:50%;transform:translateX(-50%);width:120px;height:26px;background:#05070d;border-radius:14px;z-index:3}
   .phone .screen{width:100%;height:100%;border-radius:32px;overflow:hidden;position:relative;background:#0a0e1a}
-  .phone .screen img{width:100%;height:100%;object-fit:cover;display:block}
+  .phone .screen img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block}
   /* CSS placeholder screen — replace the <img> src to use a real screenshot */
   .mock-screen{position:absolute;inset:0;background:
     radial-gradient(400px 300px at 70% 20%,rgba(34,211,238,.2),transparent 60%),
@@ -186,7 +193,7 @@
 
   /* Screenshots showcase */
   .shots{display:grid;grid-template-columns:repeat(3,1fr);gap:24px;align-items:start}
-  .shots .phone{width:100%;max-width:280px}
+  .shots .phone{width:min(300px,100%)}
   .shot-label{text-align:center;margin-top:18px}
   .shot-label b{display:block;font-family:'Space Grotesk',sans-serif;font-size:17px}
   .shot-label span{color:var(--muted);font-size:14px}
@@ -230,15 +237,15 @@
     .hero-cta,.hero-stats{justify-content:center}
     .hero-visual{margin-top:30px}
     .features{grid-template-columns:1fr 1fr}
-    .shots{grid-template-columns:1fr;justify-items:center}
-    .shots .phone{max-width:300px}
+    .shots{grid-template-columns:1fr}
     .privacy-band{grid-template-columns:1fr;padding:36px}
     .floating-tag{display:none}
     .nav-links .tlink{display:none}
   }
   @media(max-width:560px){
     .features{grid-template-columns:1fr}
-    .hero-stats{gap:20px}
+    .hero-stats{gap:14px}
+    .stat-sep{display:none}
   }
 </style>
 </head>
@@ -282,9 +289,12 @@
         <a class="badge" href="#" data-appstore aria-label="Download Route Radar on the App Store"><img src="assets/app-store-badge.svg" alt="Download on the App Store" /></a>
         <a class="btn btn-ghost" href="#features">See features</a>
       </div>
+      <p class="beta"><span class="beta-dot"></span>Now in beta — <a href="#" data-testflight>join early on TestFlight</a></p>
       <div class="hero-stats">
         <div class="s"><b class="accent-text">Live</b><span>Real-time positions</span></div>
+        <span class="stat-sep"></span>
         <div class="s"><b class="accent-text">All modes</b><span>Bus · Trolley · Rail</span></div>
+        <span class="stat-sep"></span>
         <div class="s"><b class="accent-text">Navigate</b><span>Real-time routing</span></div>
       </div>
     </div>
@@ -466,8 +476,9 @@
   <div class="wrap">
     <div class="cta reveal">
       <h2>Ride smarter starting today</h2>
-      <p>Free on the App Store for iPhone.</p>
+      <p>Free for iPhone.</p>
       <a class="badge" href="#" data-appstore style="position:relative" aria-label="Download Route Radar on the App Store"><img src="assets/app-store-badge.svg" alt="Download on the App Store" /></a>
+      <p class="beta" style="margin-top:18px;position:relative"><span class="beta-dot"></span>Now in beta — <a href="#" data-testflight>try it on TestFlight</a></p>
     </div>
   </div>
 </section>
@@ -511,8 +522,12 @@
   document.querySelectorAll('.reveal').forEach(el=>io.observe(el));
 
   // App Store link — replace this URL with your real listing.
-  const APP_STORE_URL = "https://apps.apple.com/app/route-radar/idXXXXXXXXX";
+  const APP_STORE_URL = "https://apps.apple.com/us/app/route-radar-philly-transit/id6760282388";
   document.querySelectorAll('[data-appstore]').forEach(a=>{ a.href = APP_STORE_URL; });
+
+  // Pre-launch beta link. Remove the .beta lines in the markup once the app is live on the App Store.
+  const TESTFLIGHT_URL = "https://testflight.apple.com/join/7ksWKrN2";
+  document.querySelectorAll('[data-testflight]').forEach(a=>{ a.href = TESTFLIGHT_URL; });
 </script>
 </body>
 </html>
