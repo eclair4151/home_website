@@ -1,0 +1,173 @@
+{
+  "schema": 1,
+  "providers": [
+    {
+      "id": "streameast-test",
+      "name": "StreamEast",
+      "version": 1,
+      "enabled": true,
+      "domains": {
+        "base": "https://streamseast.dad",
+        "discover": {
+          "url": "https://streamseast.zip/",
+          "value": { "sel": "a.sport-card[href]", "attr": "href", "regex": "^(https?://[^/]+)" }
+        }
+      },
+      "http": {
+        "fetch": "auto",
+        "userAgent": "chrome-desktop",
+        "headers": { "Accept-Language": "en-US,en;q=0.9" }
+      },
+      "start": "sports",
+      "pages": {
+        "sports": {
+          "url": "{base}/",
+          "layout": "menu",
+          "list": "nav a.nav-link[href]:not([href='/'])",
+          "item": {
+            "title": "@text",
+            "url": "@href"
+          },
+          "next": "games"
+        },
+        "games": {
+          "layout": "rows",
+          "groupBy": "state",
+          "refreshSec": 60,
+          "require": ["url"],
+          "list": ["a.matches[href]", ".matches-main a[href]"],
+          "item": {
+            "url": "@href",
+            "title": ["@aria-label", ".matches-team@text"],
+            "subtitle": { "sel": ".team-name", "all": true, "join": " vs " },
+            "images": "img.team-logo@src[]",
+            "state": [
+              { "sel": ".status-badge", "attr": "class", "map": { "bg-success": "live", "bg-danger": "final" } },
+              { "sel": ".truncate", "const": "upcoming" },
+              { "const": "channel" }
+            ],
+            "badge": [".status-badge@text", ".truncate@text"],
+            "startTime": {
+              "sel": ".truncate",
+              "attr": "html",
+              "regex": "moment\\('([^']+)'\\)",
+              "pipe": [{ "date": ["ISO"] }]
+            },
+            "eventId": { "from": "url", "regex": "(\\d{6,})" }
+          },
+          "next": [
+            { "match": "/redzone$", "page": "game" },
+            { "match": "/\\d{6,}/", "page": "game" }
+          ]
+        },
+        "game": {
+          "autoPlay": true,
+          "fields": {
+            "title": ["h1.match-head@text", "title@text"],
+            "subtitle": "h2.h-title@text",
+            "images": "img.mph-teamlogo@src[]",
+            "badge": ".match-score@text"
+          },
+          "sources": {
+            "list": "#mainDiv iframe.embed-responsive-item[src]",
+            "item": {
+              "url": "@src",
+              "label": { "const": "Main" }
+            },
+            "resolve": ["sniff"]
+          }
+        }
+      },
+      "resolvers": {
+        "sniff": {
+          "type": "webview-sniff",
+          "referer": "page",
+          "match": ["\\.m3u8(\\?|$)", "\\.mpd(\\?|$)", "\\.mp4(\\?|$)"],
+          "ignore": ["/ads?/", "vast", "doubleclick", "googlesyndication"],
+          "mutedAutoplay": true,
+          "blockPopups": true,
+          "timeoutSec": 20
+        }
+      },
+      "player": {
+        "live": true,
+        "stallSec": 8,
+        "bufferingTimeoutSec": 15,
+        "maxReresolve": 3,
+        "chromecast": true,
+        "airplay": true
+      },
+      "enrich": {
+        "provider": "espn",
+        "leagues": {
+          "NFL": "football/nfl",
+          "NBA": "basketball/nba",
+          "NHL": "hockey/nhl",
+          "MLB": "baseball/mlb"
+        }
+      },
+      "ui": {
+        "title": "What do you want to watch?",
+        "subtitle": "Pick a sport",
+        "loading": "Loading sports…",
+        "empty": "No sports on right now",
+        "error": "Couldn't reach the site. Pull to retry.",
+        "categoryLoading": "Loading {name}…",
+        "categoryEmptyTitle": "Nothing on right now",
+        "categoryEmptyDetail": "No games found for {name}.",
+        "categoryError": "Couldn't load {name}"
+      }
+    },
+    {
+      "id": "streameasto",
+      "name": "StreamEast",
+      "version": 1,
+      "enabled": true,
+      "domains": { "base": "https://streameasto.cx" },
+      "http": {
+        "fetch": "http",
+        "userAgent": "chrome-desktop",
+        "headers": { "Accept-Language": "en-US,en;q=0.9" }
+      },
+      "start": "sports",
+      "pages": {
+        "sports": {
+          "url": "{base}/",
+          "layout": "menu",
+          "list": "nav a.nav-link[href]",
+          "item": { "title": "@text", "url": "@href" },
+          "next": "games"
+        },
+        "games": {
+          "layout": "rows",
+          "groupBy": "state",
+          "refreshSec": 60,
+          "require": ["url", "title"],
+          "list": "a.card-link[href]",
+          "item": {
+            "url": { "attr": "href", "replace": ["streameasto.cx", "streamseaste.cx"] },
+            "title": ".card-title@text",
+            "category": ".card-cat@text",
+            "state": { "sel": ".card-live-pill", "window": ["data-starts", "data-ends"] },
+            "startTime": { "sel": ".card-live-pill", "attr": "data-starts", "pipe": [{ "date": ["epoch"] }] },
+            "endTime": { "sel": ".card-live-pill", "attr": "data-ends", "pipe": [{ "date": ["epoch"] }] }
+          }
+        }
+      },
+      "player": { "live": true, "stallSec": 8, "bufferingTimeoutSec": 15, "chromecast": false, "airplay": true },
+      "enrich": {
+        "provider": "espn",
+        "leagues": {
+          "NFL": "football/nfl",
+          "NBA": "basketball/nba",
+          "WNBA": "basketball/wnba",
+          "MLB": "baseball/mlb",
+          "NHL": "hockey/nhl",
+          "CFB": "football/college-football",
+          "NCAAB": "basketball/mens-college-basketball",
+          "CFL": "football/cfl"
+        }
+      }
+    }
+  ]
+}
