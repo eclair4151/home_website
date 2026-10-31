@@ -168,6 +168,189 @@
           "CFL": "football/cfl"
         }
       }
+    },
+    {
+      "id": "streameast-cool",
+      "name": "StreamEast",
+      "version": 1,
+      "enabled": true,
+      "domains": {
+        "base": "https://streameast.cool"
+      },
+      "http": {
+        "fetch": "http",
+        "userAgent": "chrome-desktop",
+        "headers": {
+          "Accept-Language": "en-US,en;q=0.9"
+        }
+      },
+      "start": "sports",
+      "pages": {
+        "sports": {
+          "url": "{base}/",
+          "sections": [
+            {
+              "title": "Sports",
+              "list": [
+                "#primaryNav a.nav-mainlink[href*=streams]",
+                "a.nav-mainlink[href*=streams]"
+              ],
+              "require": [
+                "title",
+                "url"
+              ],
+              "item": {
+                "title": [
+                  ".link-text@text",
+                  "@text"
+                ],
+                "url": "@href"
+              }
+            },
+            {
+              "title": "More",
+              "list": "footer.site-footer a[href*=streams]",
+              "require": [
+                "title",
+                "url"
+              ],
+              "item": {
+                "title": {
+                  "attr": "text",
+                  "replace": {
+                    "from": "\\s*Streams$",
+                    "to": "",
+                    "regex": true
+                  }
+                },
+                "url": "@href"
+              }
+            },
+            {
+              "title": "Everything",
+              "list": "#primaryNav .logo a[href]",
+              "require": [
+                "title",
+                "url"
+              ],
+              "item": {
+                "title": {
+                  "const": "All Games"
+                },
+                "url": "@href"
+              }
+            }
+          ]
+        },
+        "games": {
+          "list": [
+            "li.match-card",
+            "#GelecekMaclar li[data-league]",
+            "a.f1-podium--link[href]"
+          ],
+          "require": [
+            "url"
+          ],
+          "item": {
+            "url": [
+              "a.f1-podium--link@href",
+              "a[href]@href",
+              "@href"
+            ],
+            "title": ".MacBaslik@text",
+            "category": ".f1-podium--rank@text",
+            "state": [
+              {
+                "sel": ".btn-live",
+                "const": "live"
+              },
+              {
+                "sel": ".SaatZamanBilgisi",
+                "const": "upcoming"
+              }
+            ],
+            "badge": {
+              "sel": ".SaatZamanBilgisi:not(.btn-live)",
+              "attr": "text"
+            },
+            "espnPath": {
+              "attr": "data-league",
+              "map": {
+                "-nba$": "basketball/nba",
+                "-wnba$": "basketball/wnba",
+                "-ncaab$": "basketball/mens-college-basketball",
+                "-nfl$": "football/nfl",
+                "-cfb$": "football/college-football",
+                "-nhl$": "hockey/nhl",
+                "-mlb$": "baseball/mlb",
+                "-premier-league$": "soccer/eng.1",
+                "-laliga$": "soccer/esp.1",
+                "-serie-a$": "soccer/ita.1",
+                "-mls$": "soccer/usa.1"
+              }
+            }
+          }
+        },
+        "game": {
+          "fields": {
+            "title": [
+              "h1@text",
+              "title@text"
+            ],
+            "images": ".msb-team img@src[]",
+            "badge": ".msb-status@text"
+          },
+          "sources": {
+            "list": [
+              "#Alternatifler [onclick*=changeStream]",
+              "iframe#wp_player[src]"
+            ],
+            "item": {
+              "url": [
+                {
+                  "attr": "onclick",
+                  "regex": "changeStream\\((\\d+)\\)",
+                  "pipe": [
+                    {
+                      "prepend": "https://gooz.aapmains.net/new-stream-embed/"
+                    }
+                  ]
+                },
+                "@src"
+              ],
+              "label": [
+                "@text",
+                {
+                  "const": "Main"
+                }
+              ]
+            }
+          }
+        }
+      },
+      "enrich": {
+        "provider": "espn",
+        "leagues": {
+          "NBA": "basketball/nba",
+          "WNBA": "basketball/wnba",
+          "NCAAB": "basketball/mens-college-basketball",
+          "NFL": "football/nfl",
+          "CFB": "football/college-football",
+          "NHL": "hockey/nhl",
+          "MLB": "baseball/mlb"
+        }
+      },
+      "ui": {
+        "title": "What do you want to watch?",
+        "subtitle": "Pick a sport",
+        "loading": "Loading sports…",
+        "empty": "No sports on right now",
+        "error": "Couldn't reach the site. Pull to retry.",
+        "categoryLoading": "Loading {name}…",
+        "categoryEmptyTitle": "Nothing on right now",
+        "categoryEmptyDetail": "No games found for {name}.",
+        "categoryError": "Couldn't load {name}"
+      }
     }
   ]
 }
