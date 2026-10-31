@@ -1,0 +1,33 @@
+/* Sports Stream receiver: the Cast player in the app's colours. */
+body {
+  margin: 0;
+  background: #0a0d13;
+  --playback-logo-image: url('logo-small.png');
+}
+
+cast-media-player {
+  --background-color: #0a0d13;
+  --logo-image: url('logo.png');
+  --logo-size: 220px;
+  --splash-image: url('logo.png');
+  --splash-size: 220px;
+  --theme-hue: 216;
+  --progress-color: #5c9dff;
+}
+
+/* Shown only while debugging: the last few log lines, bottom left. */
+#debug {
+  position: fixed;
+  left: 24px;
+  bottom: 24px;
+  max-width: 60vw;
+  z-index: 10;
+  margin: 0;
+  padding: 10px 14px;
+  border-radius: 10px;
+  background: rgba(10, 13, 19, 0.8);
+  color: #f3f6fc;
+  font: 14px/1.35 monospace;
+  white-space: pre-wrap;
+  word-break: break-all;
+}
