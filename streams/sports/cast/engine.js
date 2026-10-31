@@ -195,6 +195,23 @@
     clearInterval(this.timer);
   };
 
+  /**
+   * Shaka settings for live sports. The streams we see list only ~13 s of video at a time, and Shaka's
+   * defaults chase the live edge: it starts close to it, and when it runs dry the playlist's short
+   * window moves past the playhead and Shaka skips forward to catch up. On screen that's juddering,
+   * frame-by-frame video. These trade a few seconds of delay for smooth playback:
+   *   - keep segments usable for a minute, so a stall never forces a jump forward;
+   *   - start as far behind live as the playlist allows;
+   *   - after a stall, wait until a few seconds are buffered instead of crawling frame by frame;
+   *   - fetch ahead as far as the playlist goes.
+   */
+  function shakaConfig() {
+    return {
+      manifest: { availabilityWindowOverride: 60, defaultPresentationDelay: 12 },
+      streaming: { rebufferingGoal: 5, bufferingGoal: 30, segmentPrefetchLimit: 2 },
+    };
+  }
+
   /** What we've learned about the stream so far, reported to the phone for its learned cache. */
   function newFormat() {
     return { segments: 0, container: null, prefix: null, stripped: 0, aliased: 0 };
@@ -218,6 +235,7 @@
     STRATEGIES: STRATEGIES,
     ladder: ladder,
     ProgressWatch: ProgressWatch,
+    shakaConfig: shakaConfig,
     newFormat: newFormat,
     noteSegment: noteSegment,
     log: log,

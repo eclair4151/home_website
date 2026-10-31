@@ -8,8 +8,12 @@
  *   status  { state: 'trying'|'playing'|'failed', strategy, attempt, reason }
  *   result  { strategy, format }      what worked, for the phone to remember per host
  *   error   { code, reason, strategy } a player error after playback had started
- *   log     { line }                   only while debug is on
- * The phone can send { type: 'refreshed', url } to swap in a fresh link (expired token) mid-game.
+ *   log     { line }                   only while debug is on (customData.debug or ?debug)
+ * The phone can send { type: 'refreshed', url } to swap in a fresh link (expired token) mid-game, or
+ * { type: 'debug', on } to show the log on the TV.
+ *
+ * The log is always kept (SSEngine.lines; read it over DevTools with tools/cast-lab/cdp.py), but only
+ * shows on the TV when playback fails, so a working stream is never covered by it.
  */
 (function () {
   'use strict';
@@ -43,11 +47,15 @@
   }
 
   E.onLog(function (line) {
-    if (!session.debug) return;
-    debugEl.hidden = false;
-    debugEl.textContent = E.lines.slice(-14).join('\n');
-    send('log', { line: line });
+    if (!debugEl.hidden) debugEl.textContent = E.lines.slice(-14).join('\n');
+    if (session.debug) send('log', { line: line });
   });
+
+  /** Put the log on the TV: only when playback has failed (or the phone asks), never over a working game. */
+  function showLog(show) {
+    debugEl.hidden = !show;
+    if (show) debugEl.textContent = E.lines.slice(-14).join('\n');
+  }
 
   // ---------------------------------------------------------------------------------------------
   // The player hooks: the engine decides, per strategy, whether to change anything.
@@ -57,10 +65,12 @@
   var TRACE_CALLS = 3;
   function traced(kind) {
     session.trace[kind] = (session.trace[kind] || 0) + 1;
-    return session.debug && session.trace[kind] <= TRACE_CALLS;
+    return session.trace[kind] <= TRACE_CALLS;
   }
 
   var config = new cast.framework.PlaybackConfig();
+  // Buffer-first live settings (see SSEngine.shakaConfig): a few seconds behind live, never juddering.
+  config.shakaConfig = E.shakaConfig();
   config.manifestRequestHandler = function (request) {
     if (traced('manifestRequest')) E.log('playlist request ' + shorten(request.url));
   };
@@ -151,6 +161,7 @@
     }
     if (session.step + 1 >= session.ladder.length) {
       send('status', { state: 'failed', strategy: strategy().id, reason: reason });
+      showLog(true);
       return;
     }
     session.step++;
@@ -182,6 +193,7 @@
       session.step = 0;
       session.retried = false;
       session.debug = session.debug || !!customData.debug;
+      showLog(false);
       E.log('load ' + (request.media.contentUrl || request.media.contentId));
     }
     prepare(request);
@@ -192,7 +204,7 @@
     var code = event.detailedErrorCode;
     var reason = (event.error && (event.error.shakaErrorCode || event.error.reason)) || event.reason || '';
     E.log('player error ' + code + ' ' + reason);
-    if (session.debug) E.log('error detail ' + describe(event.error || event));
+    E.log('error detail ' + describe(event.error || event));
     if (session.watch && !session.watch.done) {
       // Shaka's network errors are 1xxx; the Cast SDK reports them as 3xx.
       var network = (code >= 300 && code < 400) || String(reason).charAt(0) === '1';
@@ -202,6 +214,7 @@
     } else if (session.playing) {
       // Broke after it was playing, e.g. an expired token: the phone may send a fresh link.
       send('error', { code: code, reason: String(reason), strategy: strategy().id });
+      showLog(true);
     }
   });
 
@@ -217,7 +230,7 @@
       reload(message.url);
     } else if (message.type === 'debug') {
       session.debug = !!message.on;
-      debugEl.hidden = !session.debug;
+      showLog(session.debug);
     }
   });
 
