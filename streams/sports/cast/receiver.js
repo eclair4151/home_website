@@ -52,22 +52,64 @@
   // ---------------------------------------------------------------------------------------------
   // The player hooks: the engine decides, per strategy, whether to change anything.
 
+  // The first few calls of each hook per attempt are logged, so a failure shows exactly which request
+  // went where and what the rewrite saw.
+  var TRACE_CALLS = 3;
+  function traced(kind) {
+    session.trace[kind] = (session.trace[kind] || 0) + 1;
+    return session.debug && session.trace[kind] <= TRACE_CALLS;
+  }
+
   var config = new cast.framework.PlaybackConfig();
-  config.manifestHandler = function (text) {
-    if (!strategy().alias) return text;
-    var out = E.rewritePlaylist(text);
-    if (out.aliased && !session.format.aliased) E.log('aliased ' + out.aliased + ' segment links');
+  config.manifestRequestHandler = function (request) {
+    if (traced('manifestRequest')) E.log('playlist request ' + shorten(request.url));
+  };
+  config.manifestHandler = function (manifest) {
+    // Expected as a string; decoded if it ever arrives as bytes, and handed back the same way.
+    var isText = typeof manifest === 'string';
+    var text = isText ? manifest : new TextDecoder().decode(manifest);
+    var out = strategy().alias ? E.rewritePlaylist(text) : { text: text, aliased: 0 };
+    if (traced('manifest')) {
+      E.log('playlist ' + (isText ? 'text' : Object.prototype.toString.call(manifest)) + ', ' + text.length +
+        ' chars, ' + (text.indexOf('#EXTINF') >= 0 ? 'media' : 'master') + ', aliased ' + out.aliased);
+    }
     session.format.aliased = Math.max(session.format.aliased, out.aliased);
-    return out.text;
+    return isText ? out.text : new TextEncoder().encode(out.text);
   };
   config.segmentRequestHandler = function (request) {
-    request.url = E.unalias(request.url);
+    var before = request.url;
+    request.url = E.unalias(before);
+    if (traced('segmentRequest')) {
+      E.log('segment request ' + shorten(before) + (request.url !== before ? ' -> ' + shorten(request.url) : ''));
+    }
   };
   config.segmentHandler = function (data) {
     var result = E.inspectSegment(data, strategy().strip);
     E.noteSegment(session.format, result);
     return result.data;
   };
+
+  function shorten(url) {
+    var s = String(url);
+    return s.length > 90 ? s.slice(0, 60) + '…' + s.slice(-25) : s;
+  }
+
+  /** Everything a player error carries (Shaka code, failing URL, HTTP status), as one short line. */
+  function describe(value) {
+    try {
+      var seen = [];
+      var json = JSON.stringify(value, function (k, v) {
+        if (v && typeof v === 'object') {
+          if (seen.indexOf(v) >= 0) return undefined;
+          seen.push(v);
+        }
+        return v;
+      });
+      return (json || String(value)).slice(0, 400);
+    } catch (e) {
+      return String(value);
+    }
+  }
 
   // ---------------------------------------------------------------------------------------------
   // Loading and the ladder.
@@ -79,6 +121,7 @@
     if (session.customData.live !== false) media.streamType = cast.framework.messages.StreamType.LIVE;
     session.playing = false;
     session.format = E.newFormat();
+    session.trace = {};
     if (session.watch) session.watch.stop();
     var s = strategy();
     E.log('attempt ' + (session.step + 1) + '/' + session.ladder.length + ': ' + s.id);
@@ -95,18 +138,30 @@
     }).start();
   }
 
-  /** Move to the next strategy, or give up and say why. */
-  function next(reason) {
+  /**
+   * Move to the next strategy, or give up and say why. A network error gets one more try with the same
+   * strategy first: a dropped request says nothing about whether the strategy suits the stream.
+   */
+  function next(reason, networkError) {
     E.log('attempt ' + (session.step + 1) + ' failed: ' + reason);
+    if (networkError && !session.retried) {
+      session.retried = true;
+      E.log('network error: retrying ' + strategy().id + ' once');
+      return reload(session.media.contentUrl || session.media.contentId);
+    }
     if (session.step + 1 >= session.ladder.length) {
       send('status', { state: 'failed', strategy: strategy().id, reason: reason });
       return;
     }
     session.step++;
+    session.retried = false;
     reload(session.media.contentUrl || session.media.contentId);
   }
 
-  /** Load the same game again (next strategy, or a refreshed link) without the phone's help. */
+  /**
+   * Load the same game again (next strategy, or a refreshed link) without the phone's help. The LOAD
+   * interceptor runs for this load too, and sets the attempt up.
+   */
   function reload(url) {
     var request = new cast.framework.messages.LoadRequestData();
     session.media.contentUrl = url;
@@ -114,8 +169,7 @@
     request.media = session.media;
     request.autoplay = true;
     request.customData = Object.assign({}, session.customData, { ssAttempt: session.step });
-    prepare(request);
-    player.load(request).catch(function (e) { E.log('reload failed: ' + (e && e.message || e)); });
+    player.load(request).catch(function (e) { E.log('reload failed: ' + describe(e)); });
   }
 
   player.setMessageInterceptor(cast.framework.messages.MessageType.LOAD, function (request) {
@@ -126,6 +180,7 @@
       session.customData = customData;
       session.ladder = E.ladder(customData.hints);
       session.step = 0;
+      session.retried = false;
       session.debug = session.debug || !!customData.debug;
       E.log('load ' + (request.media.contentUrl || request.media.contentId));
     }
@@ -137,8 +192,13 @@
     var code = event.detailedErrorCode;
     var reason = (event.error && (event.error.shakaErrorCode || event.error.reason)) || event.reason || '';
     E.log('player error ' + code + ' ' + reason);
+    if (session.debug) E.log('error detail ' + describe(event.error || event));
     if (session.watch && !session.watch.done) {
-      session.watch.finish(false, 'error ' + code + ' ' + reason);
+      // Shaka's network errors are 1xxx; the Cast SDK reports them as 3xx.
+      var network = (code >= 300 && code < 400) || String(reason).charAt(0) === '1';
+      session.watch.stop();
+      session.watch.done = true;
+      next('error ' + code + ' ' + reason, network);
     } else if (session.playing) {
       // Broke after it was playing, e.g. an expired token: the phone may send a fresh link.
       send('error', { code: code, reason: String(reason), strategy: strategy().id });
