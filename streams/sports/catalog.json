@@ -246,7 +246,7 @@
           "list": [
             "li.match-card",
             "#GelecekMaclar li[data-league]",
-            "a.f1-podium--link[href]"
+            "a.f1-podium--link[href]:not([href*='/teams/'])"
           ],
           "require": [
             "url"
