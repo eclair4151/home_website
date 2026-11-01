@@ -203,12 +203,15 @@
    *   - keep segments usable for a minute, so a stall never forces a jump forward;
    *   - start as far behind live as the playlist allows;
    *   - after a stall, wait until a few seconds are buffered instead of crawling frame by frame;
-   *   - fetch ahead as far as the playlist goes.
+   *   - fetch ahead as far as the playlist goes;
+   *   - retry a failed request a few times, backing off (1, 2, 4, 8 s), before calling it an error:
+   *     these CDNs drop the odd request, and 30 s of buffer rides that out.
    */
   function shakaConfig() {
+    var retry = { maxAttempts: 5, baseDelay: 1000, backoffFactor: 2 };
     return {
-      manifest: { availabilityWindowOverride: 60, defaultPresentationDelay: 12 },
-      streaming: { rebufferingGoal: 5, bufferingGoal: 30, segmentPrefetchLimit: 2 },
+      manifest: { availabilityWindowOverride: 60, defaultPresentationDelay: 12, retryParameters: retry },
+      streaming: { rebufferingGoal: 5, bufferingGoal: 30, segmentPrefetchLimit: 2, retryParameters: retry },
     };
   }
 

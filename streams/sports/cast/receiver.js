@@ -5,12 +5,18 @@
  *   { hints: { strategies: ['smart', 'direct'] }, live: true, debug: true }
  * We try each strategy on the ladder until the video is provably playing, and tell the phone how it
  * went on our namespace:
- *   status  { state: 'trying'|'playing'|'failed', strategy, attempt, reason }
+ *   status  { state: 'trying'|'playing'|'failed'|'recovering', strategy, attempt, reason, step }
  *   result  { strategy, format }      what worked, for the phone to remember per host
  *   error   { code, reason, strategy } a player error after playback had started
  *   log     { line }                   only while debug is on (customData.debug or ?debug)
+ *   refresh {}                         the link may have expired: capture a fresh one, please
  * The phone can send { type: 'refreshed', url } to swap in a fresh link (expired token) mid-game, or
  * { type: 'debug', on } to show the log on the TV.
+ *
+ * Once a game has played, the receiver keeps it playing without the phone (see Recovery): a stuck
+ * game gets a jump to the live edge, then reloads of the same link for as long as it's on. If no
+ * strategy works at all, the ladder starts over a little later. Only an expired link needs the phone,
+ * which every reload asks for ('refresh').
  *
  * The log is always kept (SSEngine.lines; read it over DevTools with tools/cast-lab/cdp.py), but only
  * shows on the TV when playback fails, and comes down again once the video is moving, so a working
@@ -35,6 +41,8 @@
     playing: false,
     debug: /[?&]debug\b/.test(location.search),
     format: E.newFormat(),
+    restarts: 0,        // times the whole ladder has started over for this game
+    restartTimer: null,
   };
 
   function strategy() {
@@ -94,6 +102,9 @@
   function markPlaying() {
     var s = strategy();
     session.playing = true;
+    session.restarts = 0;
+    clearTimeout(session.restartTimer);
+    resetRescue();
     E.log('playing with ' + s.id + ' (' + session.format.container + ', prefix ' + session.format.prefix + ')');
     send('status', { state: 'playing', strategy: s.id, attempt: session.step + 1 });
     send('result', { strategy: s.id, format: session.format });
@@ -171,10 +182,12 @@
     var media = request.media;
     media.contentType = media.contentType || (/\.mpd(\?|$)/i.test(media.contentUrl || media.contentId) ? 'application/dash+xml' : 'application/x-mpegurl');
     if (session.customData.live !== false) media.streamType = cast.framework.messages.StreamType.LIVE;
-    session.playing = false;
     session.format = E.newFormat();
     session.trace = {};
     if (session.watch) session.watch.stop();
+    // A recovery reload: this strategy has played, and the supervisor judges whether it took.
+    if (request.customData && request.customData.ssRecover) return;
+    session.playing = false;
     stopRecovery(); // this attempt's own watch takes the log down if it plays
     var s = strategy();
     E.log('attempt ' + (session.step + 1) + '/' + session.ladder.length + ': ' + s.id);
@@ -203,6 +216,7 @@
     if (session.step + 1 >= session.ladder.length) {
       send('status', { state: 'failed', strategy: strategy().id, reason: reason });
       showFailure();
+      scheduleRestart();
       return;
     }
     session.step++;
@@ -211,17 +225,159 @@
   }
 
   /**
-   * Load the same game again (next strategy, or a refreshed link) without the phone's help. The LOAD
-   * interceptor runs for this load too, and sets the attempt up.
+   * Every strategy failed: run the ladder again from the top later (30 s, 60 s, then every 2 minutes),
+   * in case the source was only down. A late start in the meantime cancels it (see markPlaying).
    */
-  function reload(url) {
+  function scheduleRestart() {
+    var wait = Math.min(30 * Math.pow(2, session.restarts), 120);
+    session.restarts++;
+    E.log('starting over in ' + wait + 's');
+    clearTimeout(session.restartTimer);
+    session.restartTimer = setTimeout(function () {
+      session.restartTimer = null;
+      if (rescue.stopped || session.playing || !session.media) return;
+      session.step = 0;
+      session.retried = false;
+      reload(session.media.contentUrl || session.media.contentId);
+    }, wait * 1000);
+  }
+
+  /**
+   * Load the same game again (next strategy, a refreshed link, or a recovery reload) without the
+   * phone's help. The LOAD interceptor runs for this load too, and sets the attempt up.
+   */
+  function reload(url, recover) {
     var request = new cast.framework.messages.LoadRequestData();
     session.media.contentUrl = url;
     session.media.contentId = url;
     request.media = session.media;
     request.autoplay = true;
-    request.customData = Object.assign({}, session.customData, { ssAttempt: session.step });
+    request.customData = Object.assign({}, session.customData, { ssAttempt: session.step, ssRecover: !!recover });
     player.load(request).catch(function (e) { E.log('reload failed: ' + describe(e)); });
+  }
+
+  // ---------------------------------------------------------------------------------------------
+  // Recovery: once a game has played, keep it playing without the phone.
+
+  var PlayerState = cast.framework.messages.PlayerState;
+  // How long the playhead may sit still before the game counts as stuck: 20 s in all, so Shaka can
+  // refill after a short hiccup by itself (often ~10 s on these sources), but only 8 s of that while
+  // the player claims to be playing (a frozen picture) or 5 s idle (an error, or an unexpected end).
+  var STUCK_SEC = 20;
+  var STUCK_IN_STATE_SEC = {};
+  STUCK_IN_STATE_SEC[PlayerState.PLAYING] = 8;
+  STUCK_IN_STATE_SEC[PlayerState.IDLE] = 5;
+  var STEADY_SEC = 60; // playing this long after a step, and the next stall starts again at step 1
+
+  var rescue = {
+    level: 0, reloads: 0, last: null, movedAt: 0, actedAt: 0, holdUntil: 0, stopped: false,
+    state: null, stateSince: 0,
+  };
+
+  function resetRescue() {
+    rescue.level = 0;
+    rescue.reloads = 0;
+    rescue.last = null;
+    rescue.movedAt = Date.now();
+    rescue.holdUntil = 0;
+  }
+
+  /**
+   * Once a second: has the game been stuck long enough to step in? Only after it has played (before
+   * that the strategy ladder is in charge), and never while the viewer has it paused or stopped.
+   */
+  setInterval(function () {
+    if (!session.playing || rescue.stopped) return;
+    var now = Date.now();
+    var t = Number(player.getCurrentTimeSec());
+    // Moving: forward at about real speed. A seek or reload jumps, which proves nothing.
+    if (isFinite(t) && rescue.last !== null && t > rescue.last + 0.1 && t < rescue.last + 5) rescue.movedAt = now;
+    if (isFinite(t)) rescue.last = t;
+    var state = player.getPlayerState();
+    if (state !== rescue.state) { rescue.state = state; rescue.stateSince = now; }
+    if (state === PlayerState.PAUSED) { rescue.movedAt = now; return; }
+    if (rescue.level > 0 && now - rescue.movedAt < 2000 && now - rescue.actedAt > STEADY_SEC * 1000) {
+      E.log('steady for ' + STEADY_SEC + 's: recovery starts over at step 1');
+      rescue.level = 0;
+      rescue.reloads = 0;
+    }
+    if (now < rescue.holdUntil) return;
+    // A state's own limit counts from when it began: buffering that has just turned into playing
+    // hasn't had a chance to move the playhead yet.
+    var still = now - rescue.movedAt;
+    var stillInState = now - Math.max(rescue.movedAt, rescue.stateSince);
+    var inStateLimit = STUCK_IN_STATE_SEC[state];
+    if (still >= STUCK_SEC * 1000 || (inStateLimit && stillInState >= inStateLimit * 1000)) {
+      rescueStep(state, Math.round(still / 1000));
+    }
+  }, 1000);
+
+  /**
+   * The next, heavier way out, then a wait for it to take hold:
+   *   1. nudge: jump to the live edge and play (fell behind the live window, or a stuck decoder)
+   *   2+ reload: load the same link with the strategy that played, like a recast without the phone,
+   *      waiting longer each time (20 s, 40 s, then every minute) for as long as the game is on: a
+   *      source that's down for a few minutes should come back by itself, not leave a dead screen.
+   * Each reload also asks the phone for a fresh link ('refresh'), in case this one has expired; the
+   * phone decides how often it's worth capturing one.
+   */
+  function rescueStep(state, stuckSec) {
+    var now = Date.now();
+    var nudging = rescue.level === 0 && state !== PlayerState.IDLE;
+    rescue.level++;
+    rescue.actedAt = now;
+    rescue.movedAt = now;
+    showFailure();
+    if (nudging) {
+      rescue.holdUntil = now + 10 * 1000;
+      E.log('stuck ' + stuckSec + 's (' + state + '): jumping to the live edge');
+      nudge();
+    } else {
+      rescue.reloads++;
+      rescue.holdUntil = now + Math.min(10 * Math.pow(2, rescue.reloads), 60) * 1000;
+      E.log('stuck ' + stuckSec + 's (' + state + '): reload ' + rescue.reloads + ' with ' + strategy().id);
+      reload(session.media.contentUrl || session.media.contentId, true);
+      send('refresh', {});
+    }
+    send('status', { state: 'recovering', step: nudging ? 'nudge' : 'reload', attempt: rescue.level, strategy: strategy().id });
+  }
+
+  /**
+   * A fresh link from the phone. Still stuck: load it now, and give it time to start. Playing again by
+   * the time it came (the last reload worked): keep it for the next reload rather than interrupt the
+   * game. Not started yet: retry the current strategy with it.
+   */
+  function freshLink(url) {
+    var now = Date.now();
+    if (!session.playing) {
+      E.log('fresh link from the phone');
+      return reload(url);
+    }
+    if (now - rescue.movedAt < 3000) {
+      E.log('fresh link from the phone: playing, so kept for the next reload');
+      session.media.contentUrl = url;
+      session.media.contentId = url;
+      return;
+    }
+    E.log('fresh link from the phone: reloading with it');
+    rescue.actedAt = now;
+    rescue.movedAt = now;
+    rescue.holdUntil = now + 20 * 1000;
+    reload(url, true);
+  }
+
+  /** Seek to where a fresh start would begin (the same delay behind live), and play. */
+  function nudge() {
+    try {
+      var range = player.getLiveSeekableRange();
+      if (range && isFinite(range.end) && range.end > (range.start || 0)) {
+        var delay = config.shakaConfig.manifest.defaultPresentationDelay;
+        player.seek(Math.max(range.start || 0, range.end - delay));
+      }
+      player.play();
+    } catch (e) {
+      E.log('nudge failed: ' + describe(e));
+    }
   }
 
   player.setMessageInterceptor(cast.framework.messages.MessageType.LOAD, function (request) {
@@ -234,6 +390,10 @@
       session.step = 0;
       session.retried = false;
       session.debug = session.debug || !!customData.debug;
+      session.restarts = 0;
+      clearTimeout(session.restartTimer);
+      rescue.stopped = false;
+      resetRescue();
       hideFailure();
       E.log('load ' + (request.media.contentUrl || request.media.contentId));
     }
@@ -264,11 +424,17 @@
     if (session.watch && !session.watch.done) session.watch.stop();
   });
 
+  // Stopped from the phone (or Google Home): nothing to recover until the next game.
+  player.addEventListener(cast.framework.events.EventType.REQUEST_STOP, function () {
+    rescue.stopped = true;
+    clearTimeout(session.restartTimer);
+    hideFailure();
+  });
+
   context.addCustomMessageListener(NS, function (event) {
     var message = event.data || {};
     if (message.type === 'refreshed' && message.url && session.media) {
-      E.log('fresh link from the phone');
-      reload(message.url);
+      freshLink(message.url);
     } else if (message.type === 'debug') {
       session.debug = !!message.on;
       logPinned = session.debug;
