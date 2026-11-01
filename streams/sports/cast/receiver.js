@@ -13,7 +13,8 @@
  * { type: 'debug', on } to show the log on the TV.
  *
  * The log is always kept (SSEngine.lines; read it over DevTools with tools/cast-lab/cdp.py), but only
- * shows on the TV when playback fails, so a working stream is never covered by it.
+ * shows on the TV when playback fails, and comes down again once the video is moving, so a working
+ * stream is never covered by it.
  */
 (function () {
   'use strict';
@@ -55,6 +56,47 @@
   function showLog(show) {
     debugEl.hidden = !show;
     if (show) debugEl.textContent = E.lines.slice(-14).join('\n');
+  }
+
+  // Watches the playhead while the log is up for a failure: a stall can throw an error and then
+  // recover on its own seconds later, and the log shouldn't stay over a game that's playing again.
+  var recovery = null;
+  // The phone asked for the log on the TV ({ type: 'debug', on: true }), so it stays up regardless.
+  var logPinned = false;
+
+  function showFailure() {
+    showLog(true);
+    stopRecovery();
+    recovery = new E.ProgressWatch({
+      getTime: function () { return player.getCurrentTimeSec(); },
+      timeoutSec: Infinity,
+      onSuccess: function () {
+        recovery = null;
+        E.log('playing again');
+        if (!session.playing) markPlaying();
+        hideFailure();
+      },
+      onFail: function () {},
+    }).start();
+  }
+
+  function stopRecovery() {
+    if (recovery) recovery.stop();
+    recovery = null;
+  }
+
+  function hideFailure() {
+    stopRecovery();
+    if (!logPinned) showLog(false);
+  }
+
+  /** The video is provably moving with the current strategy: tell the phone what worked. */
+  function markPlaying() {
+    var s = strategy();
+    session.playing = true;
+    E.log('playing with ' + s.id + ' (' + session.format.container + ', prefix ' + session.format.prefix + ')');
+    send('status', { state: 'playing', strategy: s.id, attempt: session.step + 1 });
+    send('result', { strategy: s.id, format: session.format });
   }
 
   // ---------------------------------------------------------------------------------------------
@@ -133,16 +175,15 @@
     session.format = E.newFormat();
     session.trace = {};
     if (session.watch) session.watch.stop();
+    stopRecovery(); // this attempt's own watch takes the log down if it plays
     var s = strategy();
     E.log('attempt ' + (session.step + 1) + '/' + session.ladder.length + ': ' + s.id);
     send('status', { state: 'trying', strategy: s.id, attempt: session.step + 1 });
     session.watch = new E.ProgressWatch({
       getTime: function () { return player.getCurrentTimeSec(); },
       onSuccess: function () {
-        session.playing = true;
-        E.log('playing with ' + s.id + ' (' + session.format.container + ', prefix ' + session.format.prefix + ')');
-        send('status', { state: 'playing', strategy: s.id, attempt: session.step + 1 });
-        send('result', { strategy: s.id, format: session.format });
+        markPlaying();
+        hideFailure();
       },
       onFail: function (reason) { next(reason); },
     }).start();
@@ -161,7 +202,7 @@
     }
     if (session.step + 1 >= session.ladder.length) {
       send('status', { state: 'failed', strategy: strategy().id, reason: reason });
-      showLog(true);
+      showFailure();
       return;
     }
     session.step++;
@@ -193,7 +234,7 @@
       session.step = 0;
       session.retried = false;
       session.debug = session.debug || !!customData.debug;
-      showLog(false);
+      hideFailure();
       E.log('load ' + (request.media.contentUrl || request.media.contentId));
     }
     prepare(request);
@@ -214,7 +255,7 @@
     } else if (session.playing) {
       // Broke after it was playing, e.g. an expired token: the phone may send a fresh link.
       send('error', { code: code, reason: String(reason), strategy: strategy().id });
-      showLog(true);
+      showFailure();
     }
   });
 
@@ -230,7 +271,8 @@
       reload(message.url);
     } else if (message.type === 'debug') {
       session.debug = !!message.on;
-      showLog(session.debug);
+      logPinned = session.debug;
+      if (logPinned) showLog(true); else hideFailure();
     }
   });
 
