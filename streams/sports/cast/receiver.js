@@ -17,7 +17,8 @@
  * game gets a jump to the live edge, then reloads of the same link for as long as it's on. If no
  * strategy works at all, the ladder starts over a little later. Only a dead link needs the phone (an
  * expired token, or a source that moved the game to another address): every reload and player error
- * asks for one ('refresh'), and a link that's plainly gone keeps asking until the game plays again.
+ * asks for one ('refresh'). A link that's plainly gone keeps asking until the game plays again, and
+ * is watched meanwhile, so a game the source brings back to the same link reloads within seconds.
  *
  * The log is always kept (SSEngine.lines; read it over DevTools with tools/cast-lab/cdp.py), but only
  * shows on the TV when playback fails, and comes down again once the video is moving, so a working
@@ -282,6 +283,7 @@
   // HTTP answers that mean the link itself is gone. S3, which some sources use, says 403 for a file
   // that doesn't exist (its listing is private), so 403 is as likely "moved" as "forbidden".
   var GONE_STATUS = [401, 403, 404, 410];
+  var RECHECK_SEC = 5; // while the link is plainly gone, look at its playlist this often (see recheckLink)
 
   var rescue = {
     level: 0, reloads: 0, last: null, movedAt: 0, actedAt: 0, holdUntil: 0, stopped: false,
@@ -289,6 +291,8 @@
     progressAt: 0, // the playhead last moved (movedAt also restarts at each step, to time the next)
     lost: false,   // the link is plainly gone (see linkLost) and the game hasn't played since
     askedAt: 0, asks: 0,
+    checking: false, checkedAt: 0,
+    sawEmpty: false, // a recheck found the link empty or gone, so streams there again are news
   };
 
   function resetRescue() {
@@ -300,6 +304,7 @@
     rescue.holdUntil = 0;
     rescue.lost = false;
     rescue.asks = 0;
+    rescue.sawEmpty = false;
   }
 
   /**
@@ -317,6 +322,7 @@
       if (rescue.lost) E.log('playing again');
       rescue.lost = false;
       rescue.asks = 0;
+      rescue.sawEmpty = false;
     }
     if (isFinite(t)) rescue.last = t;
     var state = player.getPlayerState();
@@ -325,6 +331,7 @@
     if (rescue.lost && now - rescue.askedAt >= Math.min(ASK_SEC * Math.pow(2, rescue.asks - 1), ASK_MAX_SEC) * 1000) {
       askPhone();
     }
+    if (rescue.lost && !rescue.checking && now - rescue.checkedAt >= RECHECK_SEC * 1000) recheckLink();
     if (rescue.level > 0 && now - rescue.movedAt < 2000 && now - rescue.actedAt > STEADY_SEC * 1000) {
       E.log('steady for ' + STEADY_SEC + 's: recovery starts over at step 1');
       rescue.level = 0;
@@ -381,18 +388,56 @@
 
   /**
    * The link itself has stopped working mid-game: a playlist answers 4xx, or lists no streams (a source
-   * moving the game to another address leaves the old one like that). Waiting won't bring it back, so
-   * don't: reload at once (a link that always points at the current feed recovers that way) and ask
-   * the phone for a fresh link at the same time, then keep asking until the game plays again.
+   * moving the game to another address leaves the old one like that, and so does one that takes the
+   * game off for a while and brings it back to the same address). Reload at once (a link that always
+   * points at the current feed recovers that way) and ask the phone for a fresh link at the same time;
+   * then, until the game plays again, keep asking, and watch the link for its streams to come back
+   * (recheckLink).
    */
   function linkLost(why) {
     if (rescue.stopped) return;
-    if (!rescue.lost) E.log('the link stopped working (' + why + '): asking the phone for a fresh one');
+    if (!rescue.lost) {
+      E.log('the link stopped working (' + why + '): asking the phone for a fresh one');
+      rescue.checkedAt = Date.now(); // the reload below tries the link now; the rechecks start after it
+    }
     rescue.lost = true;
     rescue.last = null; // it played up to the error: only movement from here on counts as playing again
     askPhone();
     // Not straight after a reload: that reload failing is what brought us here, so wait for the next.
     if (Date.now() - rescue.actedAt > 5000) rescueStep(PlayerState.IDLE, why);
+  }
+
+  /**
+   * While the link is plainly gone, look at its playlist (a tiny request) and reload the moment it
+   * lists streams again: a source that empties a link and then brings the game back to the same one,
+   * rather than moving it, is back on the TV within seconds instead of at the next timed reload. Only
+   * a change from empty to streams counts, so a link that always lists streams (its streams are what
+   * fail) isn't reloaded over and over. A link the receiver may not read this way is left to the
+   * timed reloads.
+   */
+  function recheckLink() {
+    var url = session.media.contentUrl || session.media.contentId;
+    rescue.checking = true;
+    rescue.checkedAt = Date.now();
+    fetch(url, { cache: 'no-store' })
+      .then(function (response) { return response.ok ? response.text() : ''; })
+      .then(function (text) {
+        rescue.checking = false;
+        if (!rescue.lost || rescue.stopped || url !== (session.media.contentUrl || session.media.contentId)) return;
+        if (text.indexOf('#EXT-X-STREAM-INF') < 0 && text.indexOf('#EXTINF') < 0) {
+          rescue.sawEmpty = true;
+          return;
+        }
+        if (!rescue.sawEmpty) return;
+        rescue.sawEmpty = false;
+        E.log('the link lists streams again: reloading');
+        var now = Date.now();
+        rescue.actedAt = now;
+        rescue.movedAt = now;
+        rescue.holdUntil = now + 20 * 1000;
+        reload(url, true);
+      })
+      .catch(function () { rescue.checking = false; });
   }
 
   /** The HTTP status of the request behind a Shaka "bad HTTP status" error (1001), else 0. */
@@ -423,6 +468,7 @@
     rescue.actedAt = now;
     rescue.movedAt = now;
     rescue.holdUntil = now + 20 * 1000;
+    rescue.sawEmpty = false; // what the rechecks saw was the old link
     reload(url, true);
   }
 
