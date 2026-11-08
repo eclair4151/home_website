@@ -9,14 +9,15 @@
  *   result  { strategy, format }      what worked, for the phone to remember per host
  *   error   { code, reason, strategy } a player error after playback had started
  *   log     { line }                   only while debug is on (customData.debug or ?debug)
- *   refresh {}                         the link may have expired: capture a fresh one, please
- * The phone can send { type: 'refreshed', url } to swap in a fresh link (expired token) mid-game, or
+ *   refresh {}                         the link may have stopped working: capture a fresh one, please
+ * The phone can send { type: 'refreshed', url } to swap in a fresh link mid-game, or
  * { type: 'debug', on } to show the log on the TV.
  *
  * Once a game has played, the receiver keeps it playing without the phone (see Recovery): a stuck
  * game gets a jump to the live edge, then reloads of the same link for as long as it's on. If no
- * strategy works at all, the ladder starts over a little later. Only an expired link needs the phone,
- * which every reload asks for ('refresh').
+ * strategy works at all, the ladder starts over a little later. Only a dead link needs the phone (an
+ * expired token, or a source that moved the game to another address): every reload and player error
+ * asks for one ('refresh'), and a link that's plainly gone keeps asking until the game plays again.
  *
  * The log is always kept (SSEngine.lines; read it over DevTools with tools/cast-lab/cdp.py), but only
  * shows on the TV when playback fails, and comes down again once the video is moving, so a working
@@ -43,6 +44,7 @@
     format: E.newFormat(),
     restarts: 0,        // times the whole ladder has started over for this game
     restartTimer: null,
+    emptyPlaylist: false, // the last playlist loaded listed no streams (see manifestHandler)
   };
 
   function strategy() {
@@ -137,6 +139,10 @@
         ' chars, ' + (text.indexOf('#EXTINF') >= 0 ? 'media' : 'master') + ', aliased ' + out.aliased);
     }
     session.format.aliased = Math.max(session.format.aliased, out.aliased);
+    // An HLS playlist with neither streams nor segments: the source has taken the game off this link.
+    session.emptyPlaylist = text.indexOf('#EXTM3U') >= 0 && text.indexOf('#EXT-X-STREAM-INF') < 0 &&
+      text.indexOf('#EXTINF') < 0;
+    if (session.emptyPlaylist) E.log('the playlist lists no streams');
     return isText ? out.text : new TextEncoder().encode(out.text);
   };
   config.segmentRequestHandler = function (request) {
@@ -184,6 +190,7 @@
     if (session.customData.live !== false) media.streamType = cast.framework.messages.StreamType.LIVE;
     session.format = E.newFormat();
     session.trace = {};
+    session.emptyPlaylist = false;
     if (session.watch) session.watch.stop();
     // A recovery reload: this strategy has played, and the supervisor judges whether it took.
     if (request.customData && request.customData.ssRecover) return;
@@ -268,10 +275,20 @@
   STUCK_IN_STATE_SEC[PlayerState.PLAYING] = 8;
   STUCK_IN_STATE_SEC[PlayerState.IDLE] = 5;
   var STEADY_SEC = 60; // playing this long after a step, and the next stall starts again at step 1
+  // Asking the phone for a fresh link: at most this often, and while the link is plainly gone, again
+  // after this long, then twice as long, and so on up to ASK_MAX_SEC (the phone has its own limit).
+  var ASK_SEC = 10;
+  var ASK_MAX_SEC = 60;
+  // HTTP answers that mean the link itself is gone. S3, which some sources use, says 403 for a file
+  // that doesn't exist (its listing is private), so 403 is as likely "moved" as "forbidden".
+  var GONE_STATUS = [401, 403, 404, 410];
 
   var rescue = {
     level: 0, reloads: 0, last: null, movedAt: 0, actedAt: 0, holdUntil: 0, stopped: false,
     state: null, stateSince: 0,
+    progressAt: 0, // the playhead last moved (movedAt also restarts at each step, to time the next)
+    lost: false,   // the link is plainly gone (see linkLost) and the game hasn't played since
+    askedAt: 0, asks: 0,
   };
 
   function resetRescue() {
@@ -279,7 +296,10 @@
     rescue.reloads = 0;
     rescue.last = null;
     rescue.movedAt = Date.now();
+    rescue.progressAt = Date.now();
     rescue.holdUntil = 0;
+    rescue.lost = false;
+    rescue.asks = 0;
   }
 
   /**
@@ -291,11 +311,20 @@
     var now = Date.now();
     var t = Number(player.getCurrentTimeSec());
     // Moving: forward at about real speed. A seek or reload jumps, which proves nothing.
-    if (isFinite(t) && rescue.last !== null && t > rescue.last + 0.1 && t < rescue.last + 5) rescue.movedAt = now;
+    if (isFinite(t) && rescue.last !== null && t > rescue.last + 0.1 && t < rescue.last + 5) {
+      rescue.movedAt = now;
+      rescue.progressAt = now;
+      if (rescue.lost) E.log('playing again');
+      rescue.lost = false;
+      rescue.asks = 0;
+    }
     if (isFinite(t)) rescue.last = t;
     var state = player.getPlayerState();
     if (state !== rescue.state) { rescue.state = state; rescue.stateSince = now; }
     if (state === PlayerState.PAUSED) { rescue.movedAt = now; return; }
+    if (rescue.lost && now - rescue.askedAt >= Math.min(ASK_SEC * Math.pow(2, rescue.asks - 1), ASK_MAX_SEC) * 1000) {
+      askPhone();
+    }
     if (rescue.level > 0 && now - rescue.movedAt < 2000 && now - rescue.actedAt > STEADY_SEC * 1000) {
       E.log('steady for ' + STEADY_SEC + 's: recovery starts over at step 1');
       rescue.level = 0;
@@ -308,7 +337,7 @@
     var stillInState = now - Math.max(rescue.movedAt, rescue.stateSince);
     var inStateLimit = STUCK_IN_STATE_SEC[state];
     if (still >= STUCK_SEC * 1000 || (inStateLimit && stillInState >= inStateLimit * 1000)) {
-      rescueStep(state, Math.round(still / 1000));
+      rescueStep(state, 'stuck ' + Math.round(still / 1000) + 's (' + state + ')');
     }
   }, 1000);
 
@@ -318,10 +347,9 @@
    *   2+ reload: load the same link with the strategy that played, like a recast without the phone,
    *      waiting longer each time (20 s, 40 s, then every minute) for as long as the game is on: a
    *      source that's down for a few minutes should come back by itself, not leave a dead screen.
-   * Each reload also asks the phone for a fresh link ('refresh'), in case this one has expired; the
-   * phone decides how often it's worth capturing one.
+   * Each reload also asks the phone for a fresh link ('refresh'), in case this one has stopped working.
    */
-  function rescueStep(state, stuckSec) {
+  function rescueStep(state, why) {
     var now = Date.now();
     var nudging = rescue.level === 0 && state !== PlayerState.IDLE;
     rescue.level++;
@@ -330,16 +358,47 @@
     showFailure();
     if (nudging) {
       rescue.holdUntil = now + 10 * 1000;
-      E.log('stuck ' + stuckSec + 's (' + state + '): jumping to the live edge');
+      E.log(why + ': jumping to the live edge');
       nudge();
     } else {
       rescue.reloads++;
       rescue.holdUntil = now + Math.min(10 * Math.pow(2, rescue.reloads), 60) * 1000;
-      E.log('stuck ' + stuckSec + 's (' + state + '): reload ' + rescue.reloads + ' with ' + strategy().id);
+      E.log(why + ': reload ' + rescue.reloads + ' with ' + strategy().id);
       reload(session.media.contentUrl || session.media.contentId, true);
-      send('refresh', {});
+      askPhone();
     }
     send('status', { state: 'recovering', step: nudging ? 'nudge' : 'reload', attempt: rescue.level, strategy: strategy().id });
+  }
+
+  /** Ask the phone to capture a fresh link, at most every ASK_SEC. */
+  function askPhone() {
+    var now = Date.now();
+    if (now - rescue.askedAt < ASK_SEC * 1000) return;
+    rescue.askedAt = now;
+    rescue.asks++;
+    send('refresh', {});
+  }
+
+  /**
+   * The link itself has stopped working mid-game: a playlist answers 4xx, or lists no streams (a source
+   * moving the game to another address leaves the old one like that). Waiting won't bring it back, so
+   * don't: reload at once (a link that always points at the current feed recovers that way) and ask
+   * the phone for a fresh link at the same time, then keep asking until the game plays again.
+   */
+  function linkLost(why) {
+    if (rescue.stopped) return;
+    if (!rescue.lost) E.log('the link stopped working (' + why + '): asking the phone for a fresh one');
+    rescue.lost = true;
+    rescue.last = null; // it played up to the error: only movement from here on counts as playing again
+    askPhone();
+    // Not straight after a reload: that reload failing is what brought us here, so wait for the next.
+    if (Date.now() - rescue.actedAt > 5000) rescueStep(PlayerState.IDLE, why);
+  }
+
+  /** The HTTP status of the request behind a Shaka "bad HTTP status" error (1001), else 0. */
+  function httpStatus(error) {
+    var data = error && Number(error.shakaErrorCode) === 1001 && error.shakaErrorData;
+    return data && typeof data[1] === 'number' ? data[1] : 0;
   }
 
   /**
@@ -353,7 +412,8 @@
       E.log('fresh link from the phone');
       return reload(url);
     }
-    if (now - rescue.movedAt < 3000) {
+    // Playing means the playhead has really moved lately, not just that a step restarted the clock.
+    if (!rescue.lost && now - rescue.progressAt < 3000) {
       E.log('fresh link from the phone: playing, so kept for the next reload');
       session.media.contentUrl = url;
       session.media.contentId = url;
@@ -413,9 +473,14 @@
       session.watch.done = true;
       next('error ' + code + ' ' + reason, network);
     } else if (session.playing) {
-      // Broke after it was playing, e.g. an expired token: the phone may send a fresh link.
+      // Broke after it was playing. Ask the phone for a fresh link now, while recovery runs, rather
+      // than at the first reload; a link that's plainly gone gets its reload now too.
       send('error', { code: code, reason: String(reason), strategy: strategy().id });
       showFailure();
+      var status = httpStatus(event.error);
+      if (GONE_STATUS.indexOf(status) >= 0) linkLost('HTTP ' + status);
+      else if (session.emptyPlaylist) linkLost('no streams in the playlist');
+      else askPhone();
     }
   });
 
